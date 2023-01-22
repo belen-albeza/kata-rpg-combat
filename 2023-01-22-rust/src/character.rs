@@ -1,3 +1,5 @@
+use std::cmp;
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Character {
     health: u32,
@@ -5,9 +7,11 @@ pub struct Character {
 }
 
 impl Character {
+    const MAX_HEALTH: u32 = 1000;
+
     pub fn new() -> Self {
         return Self {
-            health: 1000,
+            health: Self::MAX_HEALTH,
             level: 1,
         };
     }
@@ -18,6 +22,14 @@ impl Character {
 
     pub fn attack(&self, damage: u32, other: &mut Character) {
         other.health = other.health.saturating_sub(damage);
+    }
+
+    pub fn heal(&self, health: u32, other: &mut Character) {
+        if other.is_dead() {
+            return;
+        }
+
+        other.health = cmp::min(other.health + health, Self::MAX_HEALTH);
     }
 }
 
@@ -65,6 +77,38 @@ mod tests {
         let mut other = any_character_with_health(1);
 
         hero.attack(100, &mut other);
+
+        assert_eq!(other.health, 0);
+        assert_eq!(other.is_dead(), true);
+    }
+
+    #[test]
+    pub fn test_can_heal_others() {
+        let hero = any_character();
+        let mut other = any_character_with_health(100);
+
+        hero.heal(50, &mut other);
+
+        assert_eq!(other.health, 150);
+    }
+
+    #[test]
+    pub fn test_cannot_heal_over_max_health() {
+        let hero = any_character();
+        let mut other = any_character_with_health(951);
+
+        hero.heal(50, &mut other);
+
+        assert_eq!(other.health, 1000);
+    }
+
+    #[test]
+    pub fn test_cannot_heal_dead_characters() {
+        let hero = any_character();
+        let mut other = any_character_with_health(0);
+        assert_eq!(other.is_dead(), true);
+
+        hero.heal(50, &mut other);
 
         assert_eq!(other.health, 0);
         assert_eq!(other.is_dead(), true);

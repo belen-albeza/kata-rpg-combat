@@ -25,4 +25,8 @@ Characters can:
 - Attack (deal damage)
 - Heal damage
 
-Conditions: - When de damaged received is higher than the actual health, health drops to `0` and the character dies. - When the character is dead, they cannot be healed. - Characters cannot be healed over `1000` health.
+Conditions:
+
+- When de damaged received is higher than the actual health, health drops to `0` and the character dies.
+- When the character is dead, they cannot be healed.
+- Characters cannot be healed over `1000` health.
