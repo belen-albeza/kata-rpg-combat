@@ -11,6 +11,10 @@ impl Character {
             level: 1,
         };
     }
+
+    pub fn is_dead(&self) -> bool {
+        return self.health == 0;
+    }
 }
 
 #[cfg(test)]
@@ -22,5 +26,20 @@ mod tests {
         let c = Character::new();
         assert_eq!(c.health, 1000);
         assert_eq!(c.level, 1);
+    }
+
+    #[test]
+    pub fn test_is_dead() {
+        let dead_chara = Character {
+            health: 0,
+            level: 1,
+        };
+        let alive_chara = Character {
+            health: 1,
+            level: 1,
+        };
+
+        assert_eq!(dead_chara.is_dead(), true);
+        assert_eq!(alive_chara.is_dead(), false);
     }
 }
