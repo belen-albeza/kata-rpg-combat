@@ -27,6 +27,22 @@ Characters can:
 
 Conditions:
 
-- When de damaged received is higher than the actual health, health drops to `0` and the character dies.
+- When the damaged received is higher than the actual health, health drops to `0` and the character dies.
 - When the character is dead, they cannot be healed.
 - Characters cannot be healed over `1000` health.
+
+### Iteration #2
+
+Attack:
+
+- A character can deal damage to their enemies, but not to themselves.
+
+Healing:
+
+- A character can heal themselves, but not their enemies.
+
+The level now has an effect on the damage dealt when attacking:
+
+- If the target is `5` or more levels above the attacking character, the damage will be reduced by 50%.
+
+- If the target is `5` or more levels below the attacking character, the damage will be boosted by 50%.

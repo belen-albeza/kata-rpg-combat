@@ -1,5 +1,10 @@
 use std::cmp;
 
+pub trait HasHealth {
+    fn add_health(&mut self, delta: i32);
+    fn is_dead(&self) -> bool;
+}
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Character {
     health: u32,
@@ -16,20 +21,29 @@ impl Character {
         };
     }
 
-    pub fn is_dead(&self) -> bool {
-        return self.health == 0;
+    pub fn attack(&self, damage: u32, other: &mut dyn HasHealth) {
+        other.add_health(-(damage as i32));
     }
 
-    pub fn attack(&self, damage: u32, other: &mut Character) {
-        other.health = other.health.saturating_sub(damage);
-    }
-
-    pub fn heal(&self, health: u32, other: &mut Character) {
+    pub fn heal(&self, health: u32, other: &mut dyn HasHealth) {
         if other.is_dead() {
             return;
         }
 
-        other.health = cmp::min(other.health + health, Self::MAX_HEALTH);
+        other.add_health(health as i32);
+    }
+}
+
+impl HasHealth for Character {
+    fn is_dead(&self) -> bool {
+        return self.health == 0;
+    }
+
+    fn add_health(&mut self, delta: i32) {
+        self.health = cmp::min(
+            cmp::max(self.health as i32 + delta, 0) as u32,
+            Self::MAX_HEALTH,
+        );
     }
 }
 
