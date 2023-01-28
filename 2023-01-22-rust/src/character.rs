@@ -1,9 +1,16 @@
+use crate::errors::InvalidTargetError;
 use std::cmp;
 
 pub trait HasHealth {
     fn add_health(&mut self, delta: i32);
     fn is_dead(&self) -> bool;
 }
+
+pub trait HasLevel {
+    fn level(&self) -> u32;
+}
+
+pub trait Target: HasHealth + HasLevel {}
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Character {
@@ -21,16 +28,30 @@ impl Character {
         };
     }
 
-    pub fn attack(&self, damage: u32, other: &mut dyn HasHealth) {
+    pub fn attack(&self, damage: u32, other: &mut dyn Target) {
         other.add_health(-(damage as i32));
     }
 
-    pub fn heal(&self, health: u32, other: &mut dyn HasHealth) {
-        if other.is_dead() {
-            return;
+    pub fn heal(
+        &mut self,
+        health: u32,
+        other: Option<&mut dyn Target>,
+    ) -> Result<(), InvalidTargetError> {
+        if other.as_ref().map_or(false, |x| !std::ptr::eq(*x, self)) {
+            return Err(InvalidTargetError);
         }
 
-        other.add_health(health as i32);
+        let target = match other {
+            Some(x) => x,
+            None => self,
+        };
+
+        if target.is_dead() {
+            return Err(InvalidTargetError);
+        }
+
+        target.add_health(health as i32);
+        return Ok(());
     }
 }
 
@@ -46,6 +67,14 @@ impl HasHealth for Character {
         );
     }
 }
+
+impl HasLevel for Character {
+    fn level(&self) -> u32 {
+        return self.level;
+    }
+}
+
+impl Target for Character {}
 
 #[cfg(test)]
 mod tests {
@@ -97,34 +126,46 @@ mod tests {
     }
 
     #[test]
-    pub fn test_can_heal_others() {
-        let hero = any_character();
-        let mut other = any_character_with_health(100);
+    pub fn test_can_heal_themselves() {
+        let mut hero = any_character_with_health(100);
 
-        hero.heal(50, &mut other);
+        let result = hero.heal(50, None);
 
-        assert_eq!(other.health, 150);
+        assert!(result.is_ok());
+        assert_eq!(hero.health, 150);
     }
 
     #[test]
     pub fn test_cannot_heal_over_max_health() {
-        let hero = any_character();
-        let mut other = any_character_with_health(951);
+        let mut hero = any_character_with_health(999);
 
-        hero.heal(50, &mut other);
+        let result = hero.heal(50, None);
 
-        assert_eq!(other.health, 1000);
+        assert!(result.is_ok());
+        assert_eq!(hero.health, 1000);
     }
 
     #[test]
     pub fn test_cannot_heal_dead_characters() {
-        let hero = any_character();
+        let mut hero = any_character();
         let mut other = any_character_with_health(0);
         assert_eq!(other.is_dead(), true);
 
-        hero.heal(50, &mut other);
+        let result = hero.heal(50, Some(&mut other));
 
+        assert_eq!(result, Err(InvalidTargetError));
         assert_eq!(other.health, 0);
         assert_eq!(other.is_dead(), true);
+    }
+
+    #[test]
+    pub fn test_cannot_heal_other_characters() {
+        let mut hero = any_character();
+        let mut other = any_character_with_health(100);
+
+        let result = hero.heal(50, Some(&mut other));
+
+        assert_eq!(result, Err(InvalidTargetError));
+        assert_eq!(other.health, 100);
     }
 }
