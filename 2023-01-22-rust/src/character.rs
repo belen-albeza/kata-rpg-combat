@@ -33,13 +33,24 @@ impl Character {
         };
     }
 
-    pub fn attack(&self, damage: u32, other: &mut dyn Target) -> Result<(), InvalidTargetError> {
+    pub fn with_health_and_level(health: u32, level: u32) -> Self {
+        let mut chara = Self::new();
+        chara.level = level;
+        chara.health = std::cmp::min(health, Self::MAX_HEALTH);
+
+        chara
+    }
+
+    pub fn attack(&self, damage: u32, other: &mut dyn Target) -> Result<u32, InvalidTargetError> {
         if self.id() == other.id() {
             return Err(InvalidTargetError);
         }
 
-        other.add_health(-(damage as i32));
-        Ok(())
+        let dealt_damage =
+            (self.damage_modifier_for_target(other) * (damage as f64)).floor() as u32;
+
+        other.add_health(-(dealt_damage as i32));
+        Ok(dealt_damage)
     }
 
     pub fn heal(
@@ -62,6 +73,16 @@ impl Character {
 
         target.add_health(health as i32);
         return Ok(());
+    }
+
+    fn damage_modifier_for_target(&self, other: &dyn Target) -> f64 {
+        let diff = self.level() as i32 - other.level() as i32;
+
+        match diff {
+            ..=-5 => 0.5,
+            5.. => 1.5,
+            _ => 1.0,
+        }
     }
 }
 
@@ -99,11 +120,11 @@ mod tests {
     }
 
     fn any_character_with_health(health: u32) -> Character {
-        Character {
-            health,
-            level: 1,
-            id: Uuid::new_v4(),
-        }
+        Character::with_health_and_level(health, 1)
+    }
+
+    fn any_character_with_health_and_level(health: u32, level: u32) -> Character {
+        Character::with_health_and_level(health, level)
     }
 
     #[test]
@@ -129,7 +150,7 @@ mod tests {
 
         let result = hero.attack(100, &mut other);
 
-        assert!(result.is_ok());
+        assert_eq!(result, Ok(100));
         assert_eq!(other.health, 900);
     }
 
@@ -149,9 +170,31 @@ mod tests {
 
         let result = hero.attack(100, &mut other);
 
-        assert!(result.is_ok());
+        assert_eq!(result, Ok(100));
         assert_eq!(other.health, 0);
         assert_eq!(other.is_dead(), true);
+    }
+
+    #[test]
+    pub fn test_attack_gets_boosted_when_target_is_5_or_more_levels_lower() {
+        let hero = any_character_with_health_and_level(1000, 6);
+        let mut other = any_character_with_health_and_level(1000, 1);
+
+        let result = hero.attack(100, &mut other);
+
+        assert_eq!(result, Ok(150));
+        assert_eq!(other.health, 850);
+    }
+
+    #[test]
+    pub fn test_attack_gets_reduced_when_target_is_5_or_more_levels_higher() {
+        let hero = any_character_with_health_and_level(1000, 1);
+        let mut other = any_character_with_health_and_level(1000, 6);
+
+        let result = hero.attack(100, &mut other);
+
+        assert_eq!(result, Ok(50));
+        assert_eq!(other.health, 950);
     }
 
     #[test]
