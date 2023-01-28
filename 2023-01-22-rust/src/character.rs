@@ -1,5 +1,6 @@
 use crate::errors::InvalidTargetError;
 use std::cmp;
+use uuid::Uuid;
 
 pub trait HasHealth {
     fn add_health(&mut self, delta: i32);
@@ -10,12 +11,15 @@ pub trait HasLevel {
     fn level(&self) -> u32;
 }
 
-pub trait Target: HasHealth + HasLevel {}
+pub trait Target: HasHealth + HasLevel {
+    fn id(&self) -> String;
+}
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Character {
     health: u32,
     level: u32,
+    id: Uuid,
 }
 
 impl Character {
@@ -23,13 +27,19 @@ impl Character {
 
     pub fn new() -> Self {
         return Self {
+            id: Uuid::new_v4(),
             health: Self::MAX_HEALTH,
             level: 1,
         };
     }
 
-    pub fn attack(&self, damage: u32, other: &mut dyn Target) {
+    pub fn attack(&self, damage: u32, other: &mut dyn Target) -> Result<(), InvalidTargetError> {
+        if self.id() == other.id() {
+            return Err(InvalidTargetError);
+        }
+
         other.add_health(-(damage as i32));
+        Ok(())
     }
 
     pub fn heal(
@@ -37,7 +47,7 @@ impl Character {
         health: u32,
         other: Option<&mut dyn Target>,
     ) -> Result<(), InvalidTargetError> {
-        if other.as_ref().map_or(false, |x| !std::ptr::eq(*x, self)) {
+        if other.as_ref().map_or(false, |x| x.id() != self.id()) {
             return Err(InvalidTargetError);
         }
 
@@ -57,7 +67,7 @@ impl Character {
 
 impl HasHealth for Character {
     fn is_dead(&self) -> bool {
-        return self.health == 0;
+        self.health == 0
     }
 
     fn add_health(&mut self, delta: i32) {
@@ -70,11 +80,15 @@ impl HasHealth for Character {
 
 impl HasLevel for Character {
     fn level(&self) -> u32 {
-        return self.level;
+        self.level
     }
 }
 
-impl Target for Character {}
+impl Target for Character {
+    fn id(&self) -> String {
+        self.id.to_string()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -85,7 +99,11 @@ mod tests {
     }
 
     fn any_character_with_health(health: u32) -> Character {
-        Character { health, level: 1 }
+        Character {
+            health,
+            level: 1,
+            id: Uuid::new_v4(),
+        }
     }
 
     #[test]
@@ -109,9 +127,19 @@ mod tests {
         let hero = any_character();
         let mut other = any_character_with_health(1000);
 
-        hero.attack(100, &mut other);
+        let result = hero.attack(100, &mut other);
 
+        assert!(result.is_ok());
         assert_eq!(other.health, 900);
+    }
+
+    #[test]
+    pub fn test_cannot_attack_themselves() {
+        let hero = any_character();
+
+        let result = hero.attack(100, &mut hero.clone());
+
+        assert_eq!(result, Err(InvalidTargetError));
     }
 
     #[test]
@@ -119,8 +147,9 @@ mod tests {
         let hero = any_character();
         let mut other = any_character_with_health(1);
 
-        hero.attack(100, &mut other);
+        let result = hero.attack(100, &mut other);
 
+        assert!(result.is_ok());
         assert_eq!(other.health, 0);
         assert_eq!(other.is_dead(), true);
     }
