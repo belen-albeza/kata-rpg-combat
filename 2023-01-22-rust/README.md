@@ -46,3 +46,11 @@ The level now has an effect on the damage dealt when attacking:
 - If the target is `5` or more levels above the attacking character, the damage will be reduced by 50%.
 
 - If the target is `5` or more levels below the attacking character, the damage will be boosted by 50%.
+
+### Iteration #3
+
+Characters have an attack range:
+
+- For melee fighters, their range is 2 meters.
+- For ranged fighters, their range is 20 meters.
+- When trying to attack, their target must be in range.

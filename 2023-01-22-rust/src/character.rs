@@ -2,6 +2,8 @@ use crate::errors::InvalidTargetError;
 use std::cmp;
 use uuid::Uuid;
 
+type Point = (f64, f64);
+
 pub trait HasHealth {
     fn add_health(&mut self, delta: i32);
     fn is_dead(&self) -> bool;
@@ -11,15 +13,27 @@ pub trait HasLevel {
     fn level(&self) -> u32;
 }
 
-pub trait Target: HasHealth + HasLevel {
+pub trait HasPosition {
+    fn position(&self) -> Point;
+}
+
+pub trait Target: HasHealth + HasLevel + HasPosition {
     fn id(&self) -> String;
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
+pub enum Fighter {
+    Melee,
+    Ranged,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Character {
+    id: Uuid,
     health: u32,
     level: u32,
-    id: Uuid,
+    fight_style: Fighter,
+    position: Point,
 }
 
 impl Character {
@@ -30,19 +44,27 @@ impl Character {
             id: Uuid::new_v4(),
             health: Self::MAX_HEALTH,
             level: 1,
+            fight_style: Fighter::Melee,
+            position: (0.0, 0.0),
         };
     }
 
-    pub fn with_health_and_level(health: u32, level: u32) -> Self {
+    pub fn with_options(health: u32, level: u32, fight_style: Fighter, position: Point) -> Self {
         let mut chara = Self::new();
         chara.level = level;
         chara.health = std::cmp::min(health, Self::MAX_HEALTH);
+        chara.fight_style = fight_style;
+        chara.position = position;
 
         chara
     }
 
     pub fn attack(&self, damage: u32, other: &mut dyn Target) -> Result<u32, InvalidTargetError> {
         if self.id() == other.id() {
+            return Err(InvalidTargetError);
+        }
+
+        if !self.is_in_range(other) {
             return Err(InvalidTargetError);
         }
 
@@ -75,6 +97,13 @@ impl Character {
         return Ok(());
     }
 
+    pub fn attack_range(&self) -> f64 {
+        match self.fight_style {
+            Fighter::Melee => 2.0,
+            Fighter::Ranged => 20.0,
+        }
+    }
+
     fn damage_modifier_for_target(&self, other: &dyn Target) -> f64 {
         let diff = self.level() as i32 - other.level() as i32;
 
@@ -83,6 +112,14 @@ impl Character {
             5.. => 1.5,
             _ => 1.0,
         }
+    }
+
+    fn is_in_range(&self, other: &dyn Target) -> bool {
+        let x = other.position().0 - self.position().0;
+        let y = other.position().1 - self.position().1;
+        let distance = (x * x + y * y).sqrt();
+
+        distance <= self.attack_range()
     }
 }
 
@@ -105,6 +142,12 @@ impl HasLevel for Character {
     }
 }
 
+impl HasPosition for Character {
+    fn position(&self) -> Point {
+        self.position
+    }
+}
+
 impl Target for Character {
     fn id(&self) -> String {
         self.id.to_string()
@@ -119,12 +162,24 @@ mod tests {
         Character::new()
     }
 
+    fn any_melee_character() -> Character {
+        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Melee, (0.0, 0.0))
+    }
+
+    fn any_ranged_character() -> Character {
+        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Ranged, (0.0, 0.0))
+    }
+
     fn any_character_with_health(health: u32) -> Character {
-        Character::with_health_and_level(health, 1)
+        Character::with_options(health, 1, Fighter::Melee, (0.0, 0.0))
     }
 
     fn any_character_with_health_and_level(health: u32, level: u32) -> Character {
-        Character::with_health_and_level(health, level)
+        Character::with_options(health, level, Fighter::Melee, (0.0, 0.0))
+    }
+
+    fn any_character_with_position(position: Point) -> Character {
+        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Melee, position)
     }
 
     #[test]
@@ -195,6 +250,30 @@ mod tests {
 
         assert_eq!(result, Ok(50));
         assert_eq!(other.health, 950);
+    }
+
+    #[test]
+    pub fn test_melee_fighters_have_an_attack_range_of_2_meters() {
+        let hero = any_melee_character();
+
+        assert_eq!(hero.attack_range(), 2.0);
+    }
+
+    #[test]
+    pub fn test_ranged_fighters_have_an_attack_range_of_20_meters() {
+        let hero = any_ranged_character();
+
+        assert_eq!(hero.attack_range(), 20.0);
+    }
+
+    #[test]
+    pub fn test_cannot_attack_targets_out_of_range() {
+        let hero = any_melee_character();
+        let mut other = any_character_with_position((0.0, 2.1));
+
+        let result = hero.attack(100, &mut other);
+
+        assert_eq!(result, Err(InvalidTargetError));
     }
 
     #[test]
