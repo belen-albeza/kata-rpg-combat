@@ -1,4 +1,5 @@
-use crate::errors::InvalidTargetError;
+use crate::errors::{FactionError, InvalidTargetError};
+use crate::factions::{Faction, FactionManager, HasFactions};
 use std::cmp;
 use uuid::Uuid;
 
@@ -17,7 +18,7 @@ pub trait HasPosition {
     fn position(&self) -> Point;
 }
 
-pub trait Target: HasHealth + HasLevel + HasPosition {
+pub trait Target: HasHealth + HasLevel + HasPosition + HasFactions {
     fn id(&self) -> String;
 }
 
@@ -27,13 +28,14 @@ pub enum Fighter {
     Ranged,
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Character {
     id: Uuid,
     health: u32,
     level: u32,
     fight_style: Fighter,
     position: Point,
+    faction_manager: FactionManager,
 }
 
 impl Character {
@@ -46,21 +48,33 @@ impl Character {
             level: 1,
             fight_style: Fighter::Melee,
             position: (0.0, 0.0),
+            faction_manager: FactionManager::new(),
         };
     }
 
-    pub fn with_options(health: u32, level: u32, fight_style: Fighter, position: Point) -> Self {
+    pub fn with_options(
+        health: u32,
+        level: u32,
+        fight_style: Fighter,
+        position: Point,
+        factions: &[Faction],
+    ) -> Self {
         let mut chara = Self::new();
         chara.level = level;
         chara.health = std::cmp::min(health, Self::MAX_HEALTH);
         chara.fight_style = fight_style;
         chara.position = position;
+        chara.faction_manager = FactionManager::with_factions(factions);
 
         chara
     }
 
     pub fn attack(&self, damage: u32, other: &mut dyn Target) -> Result<u32, InvalidTargetError> {
         if self.id() == other.id() {
+            return Err(InvalidTargetError);
+        }
+
+        if self.is_ally(other) {
             return Err(InvalidTargetError);
         }
 
@@ -102,6 +116,13 @@ impl Character {
             Fighter::Melee => 2.0,
             Fighter::Ranged => 20.0,
         }
+    }
+
+    pub fn is_ally(&self, other: &dyn Target) -> bool {
+        self.faction_manager
+            .common_factions_with(&other.factions())
+            .len()
+            > 0
     }
 
     fn damage_modifier_for_target(&self, other: &dyn Target) -> f64 {
@@ -154,6 +175,16 @@ impl Target for Character {
     }
 }
 
+impl HasFactions for Character {
+    fn join_faction(&mut self, faction: &Faction) -> Result<(), FactionError> {
+        self.faction_manager.join(faction)
+    }
+
+    fn factions(&self) -> Vec<Faction> {
+        self.faction_manager.all()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -163,23 +194,33 @@ mod tests {
     }
 
     fn any_melee_character() -> Character {
-        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Melee, (0.0, 0.0))
+        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Melee, (0.0, 0.0), &[])
     }
 
     fn any_ranged_character() -> Character {
-        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Ranged, (0.0, 0.0))
+        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Ranged, (0.0, 0.0), &[])
     }
 
     fn any_character_with_health(health: u32) -> Character {
-        Character::with_options(health, 1, Fighter::Melee, (0.0, 0.0))
+        Character::with_options(health, 1, Fighter::Melee, (0.0, 0.0), &[])
     }
 
     fn any_character_with_health_and_level(health: u32, level: u32) -> Character {
-        Character::with_options(health, level, Fighter::Melee, (0.0, 0.0))
+        Character::with_options(health, level, Fighter::Melee, (0.0, 0.0), &[])
     }
 
     fn any_character_with_position(position: Point) -> Character {
-        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Melee, position)
+        Character::with_options(Character::MAX_HEALTH, 1, Fighter::Melee, position, &[])
+    }
+
+    fn any_character_with_factions(factions: &[Faction]) -> Character {
+        Character::with_options(
+            Character::MAX_HEALTH,
+            1,
+            Fighter::Melee,
+            (0.0, 0.0),
+            factions,
+        )
     }
 
     #[test]
@@ -199,6 +240,42 @@ mod tests {
     }
 
     #[test]
+    pub fn test_can_join_factions() {
+        let mut hero = any_character();
+
+        let result = hero.join_faction(&Faction::from("horde"));
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    pub fn test_returns_the_factions_they_belong_to() {
+        let hero = any_character_with_factions(&[
+            Faction::from("horde"),
+            Faction::from("croquetas lovers"),
+        ]);
+
+        let factions = hero.factions();
+
+        assert_eq!(factions.len(), 2);
+        assert!(factions.contains(&Faction::from("horde")));
+        assert!(factions.contains(&Faction::from("croquetas lovers")));
+    }
+
+    #[test]
+    pub fn test_is_ally_of_characters_belonging_to_the_same_faction() {
+        let hero = any_character_with_factions(&vec![
+            Faction::from("horde"),
+            Faction::from("croquetas lovers"),
+        ]);
+        let ally = any_character_with_factions(&[Faction::from("horde")]);
+        let enemy = any_character_with_factions(&[Faction::from("waka waka")]);
+
+        assert_eq!(hero.is_ally(&ally), true);
+        assert_eq!(hero.is_ally(&enemy), false);
+    }
+
+    #[test]
     pub fn test_can_attack_others() {
         let hero = any_character();
         let mut other = any_character_with_health(1000);
@@ -214,6 +291,16 @@ mod tests {
         let hero = any_character();
 
         let result = hero.attack(100, &mut hero.clone());
+
+        assert_eq!(result, Err(InvalidTargetError));
+    }
+
+    #[test]
+    pub fn test_cannot_attack_allies() {
+        let hero = any_character_with_factions(&[Faction::from("horde")]);
+        let mut ally = any_character_with_factions(&[Faction::from("horde")]);
+
+        let result = hero.attack(100, &mut ally);
 
         assert_eq!(result, Err(InvalidTargetError));
     }

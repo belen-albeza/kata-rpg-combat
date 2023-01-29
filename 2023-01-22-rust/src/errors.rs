@@ -10,3 +10,14 @@ impl fmt::Display for InvalidTargetError {
         write!(f, "Invalid target")
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct FactionError;
+
+impl Error for FactionError {}
+
+impl fmt::Display for FactionError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "FactionManager error")
+    }
+}
