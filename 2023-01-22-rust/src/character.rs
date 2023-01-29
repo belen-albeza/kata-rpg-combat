@@ -94,8 +94,10 @@ impl Character {
         health: u32,
         other: Option<&mut dyn Target>,
     ) -> Result<(), InvalidTargetError> {
-        if other.as_ref().map_or(false, |x| x.id() != self.id()) {
-            return Err(InvalidTargetError);
+        if let Some(other_character) = other.as_ref() {
+            if self.id() != other_character.id() && !self.is_ally(*other_character) {
+                return Err(InvalidTargetError);
+            }
         }
 
         let target = match other {
@@ -405,5 +407,15 @@ mod tests {
 
         assert_eq!(result, Err(InvalidTargetError));
         assert_eq!(other.health, 100);
+    }
+
+    #[test]
+    pub fn test_can_heal_allies() {
+        let mut hero = any_character_with_factions(&[Faction::from("horde")]);
+        let mut ally = any_character_with_factions(&[Faction::from("horde")]);
+
+        let result = hero.heal(50, Some(&mut ally));
+
+        assert!(result.is_ok());
     }
 }
