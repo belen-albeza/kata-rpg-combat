@@ -64,3 +64,10 @@ Characters from the same faction are **allies**.
 
 - Allies can't damage each other.
 - Allies can heal each other.
+
+### Iteration #5
+
+Characters can damage other things that are not characters (**props**). This means they can attack a house, a tree or anything that has some health.
+
+- Props cannot heal nor be healed, and cannot deal damage.
+- Props belong to no faction, they are neutral.

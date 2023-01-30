@@ -1,26 +1,8 @@
+use crate::combat::{HasHealth, HasLevel, HasPosition, Point, Target};
 use crate::errors::{FactionError, InvalidTargetError};
 use crate::factions::{Faction, FactionManager, HasFactions};
 use std::cmp;
 use uuid::Uuid;
-
-type Point = (f64, f64);
-
-pub trait HasHealth {
-    fn add_health(&mut self, delta: i32);
-    fn is_dead(&self) -> bool;
-}
-
-pub trait HasLevel {
-    fn level(&self) -> u32;
-}
-
-pub trait HasPosition {
-    fn position(&self) -> Point;
-}
-
-pub trait Target: HasHealth + HasLevel + HasPosition + HasFactions {
-    fn id(&self) -> String;
-}
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Fighter {
