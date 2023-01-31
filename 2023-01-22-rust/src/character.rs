@@ -129,8 +129,8 @@ impl Character {
 }
 
 impl HasHealth for Character {
-    fn is_dead(&self) -> bool {
-        self.health == 0
+    fn health(&self) -> u32 {
+        self.health
     }
 
     fn add_health(&mut self, delta: i32) {
