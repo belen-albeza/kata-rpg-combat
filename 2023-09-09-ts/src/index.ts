@@ -34,34 +34,30 @@ export class Character implements HasHealth, DamageDealer, Healer {
   }
 }
 
-export class AttackAction {
-  readonly #target: HasHealth;
-  readonly #source: DamageDealer;
+abstract class CombatAction<T> {
+  protected readonly target: HasHealth;
+  protected readonly source: T;
 
-  constructor(source: DamageDealer, target: HasHealth) {
-    this.#target = target;
-    this.#source = source;
+  constructor(source: T, target: HasHealth) {
+    this.target = target;
+    this.source = source;
   }
 
+  abstract perform(): void;
+}
+
+export class AttackAction extends CombatAction<DamageDealer> {
   perform(): void {
-    this.#target.health -= this.#source.attack;
+    this.target.health -= this.source.attack;
   }
 }
 
-export class HealingAction {
-  readonly #target: HasHealth;
-  readonly #source: Healer;
-
-  constructor(source: Healer, target: HasHealth) {
-    this.#target = target;
-    this.#source = source;
-  }
-
+export class HealingAction extends CombatAction<Healer> {
   perform(): void {
-    if (!this.#target.isAlive) {
+    if (!this.target.isAlive) {
       throw new InvalidTargetError("cannot heal dead characters");
     }
 
-    this.#target.health += this.#source.healPower;
+    this.target.health += this.source.healPower;
   }
 }
