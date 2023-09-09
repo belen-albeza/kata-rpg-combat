@@ -1,15 +1,23 @@
 export class Character {
   static readonly #MAX_HEALTH = 1000;
 
-  health: number = Character.#MAX_HEALTH;
+  #health: number = Character.#MAX_HEALTH;
   level: number = 1;
+
+  get health(): number {
+    return this.#health;
+  }
+
+  set health(value: number) {
+    this.#health = Math.min(Character.#MAX_HEALTH, Math.max(0, value));
+  }
 
   get isAlive(): boolean {
     return this.health > 0;
   }
 
   dealDamage(hp: number, target: Character): void {
-    target.health = Math.max(0, target.health - hp);
+    target.health -= hp;
   }
 
   heal(hp: number, target: Character): void {
@@ -17,6 +25,6 @@ export class Character {
       return;
     }
 
-    target.health = Math.min(Character.#MAX_HEALTH, target.health + hp);
+    target.health += hp;
   }
 }
