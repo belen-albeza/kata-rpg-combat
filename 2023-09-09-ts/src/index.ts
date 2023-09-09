@@ -13,6 +13,10 @@ interface Healer {
   healPower: number;
 }
 
+interface HasLevel {
+  level: number;
+}
+
 export class Character implements HasHealth, DamageDealer, Healer {
   level: number = 1;
   attack: number = 10;
@@ -51,10 +55,10 @@ class Health {
 }
 
 abstract class CombatAction<T> {
-  protected readonly target: HasHealth;
+  protected readonly target: HasHealth & HasLevel;
   protected readonly source: T;
 
-  constructor(source: T, target: HasHealth) {
+  constructor(source: T, target: HasHealth & HasLevel) {
     this.target = target;
     this.source = source;
   }
@@ -62,9 +66,16 @@ abstract class CombatAction<T> {
   abstract perform(): void;
 }
 
-export class AttackAction extends CombatAction<DamageDealer> {
+export class AttackAction extends CombatAction<DamageDealer & HasLevel> {
   perform(): void {
-    this.target.health -= this.source.attack;
+    if (this.source === (this.target as unknown)) {
+      throw new InvalidTargetError("a character cannot target themselves");
+    }
+
+    const levelDiff = this.source.level - this.target.level;
+    const modifier = levelDiff >= 5 ? 1.5 : levelDiff <= -5 ? 0.5 : 1.0;
+
+    this.target.health -= this.source.attack * modifier;
   }
 }
 
@@ -72,6 +83,8 @@ export class HealingAction extends CombatAction<Healer> {
   perform(): void {
     if (!this.target.isAlive) {
       throw new InvalidTargetError("cannot heal dead characters");
+    } else if (this.target !== (this.source as unknown)) {
+      throw new InvalidTargetError("a character can only heal themselves");
     }
 
     this.target.health += this.source.healPower;
