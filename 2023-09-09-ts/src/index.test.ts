@@ -1,7 +1,7 @@
 import { InvalidTargetError } from "./index";
 import { describe, it, expect } from "vitest";
 
-import { Character, AttackAction } from ".";
+import { Character, AttackAction, HealingAction } from ".";
 
 describe("Character", () => {
   it("is initialized at level 1 and 1000 health", () => {
@@ -15,40 +15,6 @@ describe("Character", () => {
     expect(c.isAlive).toBeTruthy();
     c.health = 0;
     expect(c.isAlive).toBeFalsy();
-  });
-
-  describe("healing", () => {
-    it("can heal another character", () => {
-      const c = new Character();
-      const other = new Character();
-      other.health = 900;
-
-      c.heal(20, other);
-
-      expect(other.health).toBe(920);
-    });
-
-    it("cannot heal over 1000 hp", () => {
-      const c = new Character();
-      const other = new Character();
-
-      c.heal(20, other);
-
-      expect(other.health).toBe(1000);
-    });
-
-    it("cannot heal a dead character", () => {
-      const c = new Character();
-      const other = new Character();
-      other.health = 0;
-
-      expect(other.isAlive).toBeFalsy();
-
-      expect(() => c.heal(1, other)).toThrowError(/dead character/);
-
-      expect(other.isAlive).toBeFalsy();
-      expect(other.health).toBe(0);
-    });
   });
 });
 
@@ -74,5 +40,43 @@ describe("AttackAction", () => {
 
     expect(other.health).toBe(0);
     expect(other.isAlive).toBeFalsy();
+  });
+});
+
+describe("HealingAction", () => {
+  it("can heal another character", () => {
+    const c = new Character();
+    c.healPower = 20;
+    const other = new Character();
+    other.health = 900;
+
+    const healing = new HealingAction(c, other);
+    healing.perform();
+
+    expect(other.health).toBe(920);
+  });
+
+  it("cannot heal over 1000 hp", () => {
+    const c = new Character();
+    const other = new Character();
+
+    const healing = new HealingAction(c, other);
+    healing.perform();
+
+    expect(other.health).toBe(1000);
+  });
+
+  it("cannot heal a dead character", () => {
+    const c = new Character();
+    const other = new Character();
+    other.health = 0;
+
+    const healing = new HealingAction(c, other);
+
+    expect(other.isAlive).toBeFalsy();
+    expect(() => healing.perform()).toThrowError(/dead character/);
+
+    expect(other.isAlive).toBeFalsy();
+    expect(other.health).toBe(0);
   });
 });
