@@ -1,7 +1,7 @@
 import { InvalidTargetError } from "./index";
 import { describe, it, expect } from "vitest";
 
-import { Character } from ".";
+import { Character, AttackAction } from ".";
 
 describe("Character", () => {
   it("is initialized at level 1 and 1000 health", () => {
@@ -15,27 +15,6 @@ describe("Character", () => {
     expect(c.isAlive).toBeTruthy();
     c.health = 0;
     expect(c.isAlive).toBeFalsy();
-  });
-
-  describe("attack", () => {
-    it("can deal damage to another character", () => {
-      const c = new Character();
-      const other = new Character();
-
-      c.dealDamage(20, other);
-
-      expect(other.health).toBe(980);
-    });
-
-    it("kills other character when damage exceeds health", () => {
-      const c = new Character();
-      const other = new Character();
-
-      c.dealDamage(2000, other);
-
-      expect(other.health).toBe(0);
-      expect(other.isAlive).toBeFalsy();
-    });
   });
 
   describe("healing", () => {
@@ -70,5 +49,30 @@ describe("Character", () => {
       expect(other.isAlive).toBeFalsy();
       expect(other.health).toBe(0);
     });
+  });
+});
+
+describe("AttackAction", () => {
+  it("can deal damage to another character", () => {
+    const c = new Character();
+    c.attack = 20;
+    const other = new Character();
+    const attack = new AttackAction(c, other);
+
+    attack.perform();
+
+    expect(other.health).toBe(980);
+  });
+
+  it("kills other character when damage exceeds health", () => {
+    const c = new Character();
+    c.attack = 2000;
+    const other = new Character();
+    const attack = new AttackAction(c, other);
+
+    attack.perform();
+
+    expect(other.health).toBe(0);
+    expect(other.isAlive).toBeFalsy();
   });
 });

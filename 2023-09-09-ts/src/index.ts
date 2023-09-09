@@ -5,11 +5,16 @@ interface HasHealth {
   get isAlive(): boolean;
 }
 
+interface DamageDealer {
+  attack: number;
+}
+
 export class Character implements HasHealth {
   static readonly #MAX_HEALTH = 1000;
 
   #health: number = Character.#MAX_HEALTH;
   level: number = 1;
+  attack: number = 10;
 
   get health(): number {
     return this.#health;
@@ -23,15 +28,25 @@ export class Character implements HasHealth {
     return this.health > 0;
   }
 
-  dealDamage(hp: number, target: HasHealth): void {
-    target.health -= hp;
-  }
-
   heal(hp: number, target: HasHealth): void {
     if (!target.isAlive) {
       throw new InvalidTargetError("Cannot heal dead characters");
     }
 
     target.health += hp;
+  }
+}
+
+export class AttackAction {
+  readonly #target: HasHealth;
+  readonly #source: DamageDealer;
+
+  constructor(source: DamageDealer, target: HasHealth) {
+    this.#target = target;
+    this.#source = source;
+  }
+
+  perform(): void {
+    this.#target.health -= this.#source.attack;
   }
 }
