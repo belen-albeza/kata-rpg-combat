@@ -1,4 +1,11 @@
-export class Character {
+export class InvalidTargetError extends Error {}
+
+interface HasHealth {
+  health: number;
+  get isAlive(): boolean;
+}
+
+export class Character implements HasHealth {
   static readonly #MAX_HEALTH = 1000;
 
   #health: number = Character.#MAX_HEALTH;
@@ -16,13 +23,13 @@ export class Character {
     return this.health > 0;
   }
 
-  dealDamage(hp: number, target: Character): void {
+  dealDamage(hp: number, target: HasHealth): void {
     target.health -= hp;
   }
 
-  heal(hp: number, target: Character): void {
+  heal(hp: number, target: HasHealth): void {
     if (!target.isAlive) {
-      return;
+      throw new InvalidTargetError("Cannot heal dead characters");
     }
 
     target.health += hp;

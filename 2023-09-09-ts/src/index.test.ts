@@ -1,3 +1,4 @@
+import { InvalidTargetError } from "./index";
 import { describe, it, expect } from "vitest";
 
 import { Character } from ".";
@@ -64,7 +65,7 @@ describe("Character", () => {
 
       expect(other.isAlive).toBeFalsy();
 
-      c.heal(1, other);
+      expect(() => c.heal(1, other)).toThrowError(/dead character/);
 
       expect(other.isAlive).toBeFalsy();
       expect(other.health).toBe(0);
