@@ -8,5 +8,5 @@ This project uses [Bun](https://bun.sh/) instead of Node for running code and te
 
 After installing Bun, you can:
 
-- Run the project with `bun start`
-- Run the tests with `bun test`
+- Run the project with `bun start`.
+- Run the tests with `bun test` or `bun test --watch`.
