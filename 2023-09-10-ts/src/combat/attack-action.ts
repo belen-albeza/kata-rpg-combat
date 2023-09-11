@@ -1,8 +1,9 @@
 import type { WithHealth } from "../character";
 
 export class InvalidTargetError extends Error {}
+export class InvalidSourceError extends Error {}
 
-interface Attacker {
+interface Attacker extends WithHealth {
   attack: number;
 }
 
@@ -13,8 +14,10 @@ export class AttackAction {
   readonly #target: AttackTarget;
 
   constructor(source: Attacker, target: AttackTarget) {
-    if (source === (target as unknown)) {
+    if (source === target) {
       throw new InvalidTargetError("attackers cannot target themselves");
+    } else if (!source.isAlive) {
+      throw new InvalidSourceError("attackers cannot be dead");
     }
 
     this.#source = source;

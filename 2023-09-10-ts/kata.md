@@ -16,12 +16,14 @@ The problem is broken down into several user stories to help you to focus on doi
   - Health, starting at `1000`
   - May be Alive or Dead, starting Alive
 - Characters can Deal Damage to Characters.
-  - Damage is subtracted from Health
-  - When damage received exceeds current Health, Health becomes `0` and the character dies
-  - A Character cannot Deal Damage to itself
+  - Damage is subtracted from Health.
+  - When damage received exceeds current Health, Health becomes `0` and the character dies.
+  - A Character cannot Deal Damage to itself.
+  - Dead characters cannot Deal Damage.
 - A Character can Heal themselves.
-  - Dead characters cannot be healed
+  - Dead characters cannot be healed.
   - Healing cannot raise health above `1000`.
+  - Dead characters cannot heal.
 
 ### Levels
 
