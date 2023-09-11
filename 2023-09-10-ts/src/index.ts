@@ -1,6 +1,5 @@
 import { CharacterBuilder } from "./character";
-import { AttackAction } from "./combat/attack-action";
-import { HealingAction } from "./combat/healing-action";
+import { AttackAction, HealingAction } from "./combat-actions";
 
 const warrior = new CharacterBuilder()
   .withName("Warrior")

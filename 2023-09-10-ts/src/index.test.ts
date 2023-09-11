@@ -1,8 +1,7 @@
 import { describe, it, expect } from "bun:test";
 
-import { AttackAction } from "./combat/attack-action";
-import { HealingAction } from "./combat/healing-action";
-import { Character, CharacterBuilder } from "./character";
+import { AttackAction, HealingAction } from "./combat-actions";
+import { CharacterBuilder } from "./character";
 
 describe("RPG Combat", () => {
   it("has characters attacking other characters", () => {
