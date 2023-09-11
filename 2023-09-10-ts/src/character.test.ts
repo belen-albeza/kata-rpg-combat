@@ -40,31 +40,4 @@ describe("Character", () => {
       expect(c.healing).toBe(100);
     });
   });
-
-  describe("Healing", () => {
-    it("can heal themselves", () => {
-      const c = new CharacterBuilder().withHealth(100).withHealing(200).build();
-      c.healDamage();
-
-      expect(c.health).toBe(300);
-    });
-
-    it("cannot heal over 1000 hp", () => {
-      const c = new CharacterBuilder().withHealth(900).withHealing(200).build();
-
-      c.healDamage();
-
-      expect(c.health).toBe(1000);
-    });
-
-    it("cannot heal if they are dead", () => {
-      const c = new CharacterBuilder().withHealth(0).withHealing(100).build();
-
-      expect(() => {
-        c.healDamage();
-      }).toThrow(/dead/);
-
-      expect(c.health).toBe(0);
-    });
-  });
 });

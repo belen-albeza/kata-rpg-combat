@@ -1,7 +1,5 @@
 import type { WithHealth } from "../character";
-
-export class InvalidTargetError extends Error {}
-export class InvalidSourceError extends Error {}
+import { InvalidSourceError, InvalidTargetError } from ".";
 
 interface Attacker extends WithHealth {
   attack: number;

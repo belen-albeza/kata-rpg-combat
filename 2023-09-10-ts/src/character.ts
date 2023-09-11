@@ -1,6 +1,3 @@
-export class InvalidSourceError extends Error {}
-export class InvalidTargetError extends Error {}
-
 export interface WithHealth {
   health: number;
   isAlive: boolean;
@@ -32,24 +29,6 @@ export class Character implements WithHealth {
 
   toString() {
     return `${this.name} (${this.health} HP)`;
-  }
-
-  dealDamage(other: WithHealth) {
-    if (other === this) {
-      throw new InvalidTargetError(
-        "character cannot target themselves for attack"
-      );
-    }
-
-    other.health -= this.attack;
-  }
-
-  healDamage() {
-    if (!this.isAlive) {
-      throw new InvalidSourceError("character is dead");
-    }
-
-    this.health += this.healing;
   }
 }
 
