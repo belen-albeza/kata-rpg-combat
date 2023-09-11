@@ -4,6 +4,9 @@ export interface WithHealth {
   health: number;
   isAlive: boolean;
 }
+export interface WithLevel {
+  level: number;
+}
 
 export { AttackAction } from "./attack-action";
 export { HealingAction } from "./healing-action";
