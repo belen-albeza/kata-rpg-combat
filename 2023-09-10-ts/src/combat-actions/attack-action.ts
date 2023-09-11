@@ -1,4 +1,4 @@
-import type { WithHealth } from "../character";
+import type { WithHealth } from ".";
 import { InvalidSourceError, InvalidTargetError } from ".";
 
 interface Attacker extends WithHealth {

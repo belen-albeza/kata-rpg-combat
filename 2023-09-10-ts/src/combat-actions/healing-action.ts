@@ -1,5 +1,5 @@
 import { InvalidSourceError } from ".";
-import type { WithHealth } from "../character";
+import type { WithHealth } from ".";
 
 interface Healer extends WithHealth {
   healing: number;

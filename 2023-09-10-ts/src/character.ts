@@ -1,8 +1,4 @@
-export interface WithHealth {
-  health: number;
-  isAlive: boolean;
-}
-
+import type { WithHealth } from "./combat-actions";
 export class Character implements WithHealth {
   static readonly #MAX_HEALTH = 1000;
 
