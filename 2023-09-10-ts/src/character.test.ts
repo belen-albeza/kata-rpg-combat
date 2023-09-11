@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { Character, InvalidSourceError } from "./character";
+import { Character } from "./character";
 
 class CharacterBuilder {
   #character: Character = new Character();
