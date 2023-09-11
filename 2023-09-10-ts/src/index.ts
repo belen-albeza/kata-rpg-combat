@@ -1,5 +1,6 @@
 import { CharacterBuilder } from "./character";
 import { AttackAction } from "./combat/attack-action";
+import { HealingAction } from "./combat/healing-action";
 
 const warrior = new CharacterBuilder()
   .withName("Warrior")
@@ -8,14 +9,14 @@ const warrior = new CharacterBuilder()
   .build();
 const goblin = new CharacterBuilder()
   .withName("Goblin")
-  .withAttack(50)
+  .withAttack(80)
   .withHealth(300)
   .build();
 
-const turns = [new AttackAction(warrior, goblin)];
+const turns = [new AttackAction(goblin, warrior), new HealingAction(warrior)];
 
 turns.forEach((x) => {
   x.run();
-  console.log(`\t${warrior}`);
-  console.log(`\t${goblin}`);
+  console.log(`\t* ${warrior}`);
+  console.log(`\t* ${goblin}`);
 });
