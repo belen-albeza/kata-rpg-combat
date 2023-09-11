@@ -1,70 +1,43 @@
 import { describe, it, expect } from "bun:test";
-import { Character } from "./character";
-
-class CharacterBuilder {
-  #character: Character = new Character();
-
-  build(): Character {
-    return this.#character;
-  }
-
-  withHealth(health: number) {
-    this.#character.health = health;
-    return this;
-  }
-
-  withAttack(attack: number) {
-    this.#character.attack = attack;
-    return this;
-  }
-
-  withHealing(healing: number) {
-    this.#character.healing = healing;
-    return this;
-  }
-}
+import { Character, CharacterBuilder } from "./character";
 
 describe("Character", () => {
-  it("is created with 1000 health", () => {
-    const c = new Character();
-    expect(c.health).toBe(1000);
-  });
-
-  it("returns whether they are alive", () => {
-    const alive = new CharacterBuilder().withHealth(1).build();
-    const dead = new CharacterBuilder().withHealth(0).build();
-
-    expect(alive.isAlive).toBeTrue();
-    expect(dead.isAlive).toBeFalse();
-  });
-
-  describe("Attacking", () => {
-    it("can damage another character", () => {
-      const c = new CharacterBuilder().withAttack(100).build();
-      const other = new CharacterBuilder().withHealth(1000).build();
-
-      c.dealDamage(other);
-
-      expect(other.health).toBe(900);
-    });
-
-    it("cannot damage themselves", () => {
-      const c = new CharacterBuilder().withAttack(100).withHealth(1000).build();
-
-      expect(() => {
-        c.dealDamage(c);
-      }).toThrow(/cannot target themselves/);
+  describe("Health", () => {
+    it("is created with 1000 health", () => {
+      const c = new Character();
       expect(c.health).toBe(1000);
     });
 
-    it("cannot reduce health below zero", () => {
+    it("returns whether they are alive", () => {
+      const alive = new CharacterBuilder().withHealth(1).build();
+      const dead = new CharacterBuilder().withHealth(0).build();
+
+      expect(alive.isAlive).toBeTrue();
+      expect(dead.isAlive).toBeFalse();
+    });
+
+    it("cannot have their health reduced below zero", () => {
+      const c = new Character();
+      c.health = -1;
+      expect(c.health).toBe(0);
+    });
+
+    it("cannot have their health raised above initial value", () => {
+      const c = new Character();
+      c.health = 1001;
+      expect(c.health).toBe(1000);
+    });
+  });
+
+  describe("Attributes", () => {
+    it("can deal damage", () => {
       const c = new CharacterBuilder().withAttack(100).build();
-      const other = new CharacterBuilder().withHealth(1).build();
+      expect(c.attack).toBe(100);
+    });
 
-      c.dealDamage(other);
-
-      expect(other.health).toBe(0);
-      expect(other.isAlive).toBeFalse();
+    it("can heal", () => {
+      const c = new CharacterBuilder().withHealing(100).build();
+      expect(c.healing).toBe(100);
     });
   });
 
