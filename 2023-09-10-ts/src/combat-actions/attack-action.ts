@@ -11,11 +11,13 @@ export class AttackAction {
   readonly #source: Attacker;
   readonly #target: AttackTarget;
 
-  constructor(source: Attacker, target: AttackTarget) {
+  constructor(source: Attacker, target: AttackTarget, areAllies: boolean) {
     if (source === target) {
       throw new InvalidTargetError("attackers cannot target themselves");
     } else if (!source.isAlive) {
       throw new InvalidSourceError("attackers cannot be dead");
+    } else if (areAllies) {
+      throw new InvalidTargetError("attackers cannot target allies");
     }
 
     this.#source = source;

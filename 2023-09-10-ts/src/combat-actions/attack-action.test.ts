@@ -22,7 +22,7 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamage(100);
     const target = anyTargetWithHealth(1000);
 
-    const action = new AttackAction(attacker, target);
+    const action = new AttackAction(attacker, target, false);
     action.run();
 
     expect(target.health).toBe(900);
@@ -32,7 +32,7 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamageAndLevel(100, 6);
     const target = anyTargetWithHealthAndLevel(1000, 1);
 
-    const action = new AttackAction(attacker, target);
+    const action = new AttackAction(attacker, target, false);
     action.run();
 
     expect(target.health).toBe(850);
@@ -42,7 +42,7 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamageAndLevel(100, 1);
     const target = anyTargetWithHealthAndLevel(1000, 6);
 
-    const action = new AttackAction(attacker, target);
+    const action = new AttackAction(attacker, target, false);
     action.run();
 
     expect(target.health).toBe(950);
@@ -52,8 +52,17 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamage(100);
 
     expect(() => {
-      const action = new AttackAction(attacker, attacker);
+      const action = new AttackAction(attacker, attacker, false);
     }).toThrow(/cannot target themselves/);
+  });
+
+  it("throws when attacker and target are allies", () => {
+    const attacker = anyAttackerWithDamage(100);
+    const target = anyTargetWithHealth(1000);
+
+    expect(() => {
+      const action = new AttackAction(attacker, target, true);
+    }).toThrow(/cannot target allies/);
   });
 
   it("throws when attacker is dead", () => {
@@ -66,7 +75,7 @@ describe("AttackAction", () => {
     const target = anyTargetWithHealth(1000);
 
     expect(() => {
-      const action = new AttackAction(attacker, target);
+      const action = new AttackAction(attacker, target, false);
     }).toThrow(/dead/);
   });
 });
