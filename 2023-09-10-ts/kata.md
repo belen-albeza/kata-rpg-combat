@@ -41,3 +41,20 @@ The problem is broken down into several user stories to help you to focus on doi
 - Players belonging to the same Faction are considered Allies.
   - Allies cannot Deal Damage to one another.
   - Allies can Heal one another and non-allies cannot.
+
+### Magical Objects
+
+- As well as Characters there are also **Magical Objects**.
+  - Magical Objects have Health.
+  - The maximum amount of Health is fixed at the time the object is created.
+  - When reduced to `0` Health, Magical Objects are Destroyed.
+  - Magical Objects cannot be Healed by Characters.
+  - Magical Objects do not belong to Factions; they are neutral.
+- Characters can gain health from a **Healing Magical Object**.
+  - Characters can gain any amount of health from the Object, up to its maximum and theirs.
+  - Healing Magical Objects cannot deal Damage.
+- Characters can deal Damage by using a **Magical Weapon**.
+  - These Magical Objects deal a fixed amount of damage when they are used.
+  - The amount of damage is fixed at the time the weapon is created.
+  - Every time the weapon is used, the Health is reduced by `1`.
+  - Magical Weapons cannot give Health to a Character.
