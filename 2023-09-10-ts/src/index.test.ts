@@ -17,11 +17,12 @@ describe("RPG Combat", () => {
   });
 
   it("has characters than can heal themselves", () => {
+    const factions = new FactionManager();
     const healer = new CharacterBuilder()
       .withHealing(100)
       .withHealth(800)
       .build();
-    const healing = new HealingAction(healer);
+    const healing = new HealingAction(healer, healer, factions);
 
     healing.run();
 

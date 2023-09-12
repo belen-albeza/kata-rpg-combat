@@ -22,7 +22,7 @@ factions.join("Horde", goblin);
 
 const turns = [
   new AttackAction(goblin, warrior, factions),
-  new HealingAction(warrior),
+  new HealingAction(warrior, warrior, factions),
 ];
 
 turns.forEach((x) => {

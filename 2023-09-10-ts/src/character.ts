@@ -1,6 +1,4 @@
-import type { WithHealth } from "./combat-actions";
-
-export class Character implements WithHealth {
+export class Character {
   static readonly #MAX_HEALTH_LOW_LEVELS = 1000;
   static readonly #MAX_HEALTH_HIGH_LEVELS = 1500;
 

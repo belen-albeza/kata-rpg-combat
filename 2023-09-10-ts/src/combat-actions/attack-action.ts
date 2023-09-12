@@ -7,7 +7,7 @@ interface Attacker extends WithHealth, WithLevel {
 
 interface AttackTarget extends WithHealth, WithLevel {}
 
-interface FactionManager {
+interface FactionInformer {
   areAllies(source: Attacker, target: AttackTarget): boolean;
 }
 
@@ -18,7 +18,7 @@ export class AttackAction {
   constructor(
     source: Attacker,
     target: AttackTarget,
-    factions: FactionManager
+    factions: FactionInformer
   ) {
     if (source === target) {
       throw new InvalidTargetError("attackers cannot target themselves");

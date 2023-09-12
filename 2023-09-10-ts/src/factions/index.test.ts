@@ -36,6 +36,16 @@ describe("FactionManager", () => {
       expect(fm.hasMember("Horde", "Garrosh")).toBeTrue();
     });
 
+    it("makes a member join multiple factions", () => {
+      const fm = anyManagerWithFactions(["Horde", "Alliance"]);
+
+      fm.join("Alliance", "Sylvanas");
+      fm.join("Horde", "Sylvanas");
+
+      expect(fm.hasMember("Horde", "Sylvanas"));
+      expect(fm.hasMember("Alliance", "Sylvanas"));
+    });
+
     it("throws an error if faction does not exist", () => {
       const fm = anyManagerWithFactions([]);
 
