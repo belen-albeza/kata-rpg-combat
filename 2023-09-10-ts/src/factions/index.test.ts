@@ -110,10 +110,12 @@ describe("FactionManager", () => {
     });
 
     it("does not mark two people as allies after one of the has left the faction", () => {
-      // const fm = anyManagerWithFactions(["Horde"]);
-      // fm.join("Horde", "Garrosh");
-      // fm.join("Horde", "Thrall");
-      // expect(fm.areAllies("Garrosh", "Thrall")).toBeTrue();
+      const fm = anyManagerWithFactions(["Horde"]);
+      fm.join("Horde", "Garrosh");
+      fm.join("Horde", "Thrall");
+      fm.leave("Horde", "Thrall");
+
+      expect(fm.areAllies("Garrosh", "Thrall")).toBeFalse();
     });
   });
 });

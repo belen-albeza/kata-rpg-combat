@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, mock } from "bun:test";
 import { AttackAction } from "./attack-action";
 
 const anyAttackerWithDamage = (damage: number) => {
@@ -17,12 +17,18 @@ const anyTargetWithHealthAndLevel = (health: number, level: number) => {
   return { health, isAlive: health > 0, level };
 };
 
+const anyFactionManager = () => {
+  return {
+    areAllies: () => false,
+  };
+};
+
 describe("AttackAction", () => {
   it("damages target", () => {
     const attacker = anyAttackerWithDamage(100);
     const target = anyTargetWithHealth(1000);
 
-    const action = new AttackAction(attacker, target, false);
+    const action = new AttackAction(attacker, target, anyFactionManager());
     action.run();
 
     expect(target.health).toBe(900);
@@ -32,7 +38,7 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamageAndLevel(100, 6);
     const target = anyTargetWithHealthAndLevel(1000, 1);
 
-    const action = new AttackAction(attacker, target, false);
+    const action = new AttackAction(attacker, target, anyFactionManager());
     action.run();
 
     expect(target.health).toBe(850);
@@ -42,7 +48,7 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamageAndLevel(100, 1);
     const target = anyTargetWithHealthAndLevel(1000, 6);
 
-    const action = new AttackAction(attacker, target, false);
+    const action = new AttackAction(attacker, target, anyFactionManager());
     action.run();
 
     expect(target.health).toBe(950);
@@ -52,7 +58,7 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamage(100);
 
     expect(() => {
-      const action = new AttackAction(attacker, attacker, false);
+      const action = new AttackAction(attacker, attacker, anyFactionManager());
     }).toThrow(/cannot target themselves/);
   });
 
@@ -60,8 +66,11 @@ describe("AttackAction", () => {
     const attacker = anyAttackerWithDamage(100);
     const target = anyTargetWithHealth(1000);
 
+    const factions = anyFactionManager();
+    factions.areAllies = mock(() => true);
+
     expect(() => {
-      const action = new AttackAction(attacker, target, true);
+      const action = new AttackAction(attacker, target, factions);
     }).toThrow(/cannot target allies/);
   });
 
@@ -75,7 +84,7 @@ describe("AttackAction", () => {
     const target = anyTargetWithHealth(1000);
 
     expect(() => {
-      const action = new AttackAction(attacker, target, false);
+      const action = new AttackAction(attacker, target, anyFactionManager());
     }).toThrow(/dead/);
   });
 });

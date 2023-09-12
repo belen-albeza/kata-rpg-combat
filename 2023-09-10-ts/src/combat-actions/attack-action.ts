@@ -7,16 +7,24 @@ interface Attacker extends WithHealth, WithLevel {
 
 interface AttackTarget extends WithHealth, WithLevel {}
 
+interface FactionManager {
+  areAllies(source: Attacker, target: AttackTarget): boolean;
+}
+
 export class AttackAction {
   readonly #source: Attacker;
   readonly #target: AttackTarget;
 
-  constructor(source: Attacker, target: AttackTarget, areAllies: boolean) {
+  constructor(
+    source: Attacker,
+    target: AttackTarget,
+    factions: FactionManager
+  ) {
     if (source === target) {
       throw new InvalidTargetError("attackers cannot target themselves");
     } else if (!source.isAlive) {
       throw new InvalidSourceError("attackers cannot be dead");
-    } else if (areAllies) {
+    } else if (factions.areAllies(source, target)) {
       throw new InvalidTargetError("attackers cannot target allies");
     }
 

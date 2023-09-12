@@ -17,12 +17,11 @@ const goblin = new CharacterBuilder()
   .withHealth(300)
   .build();
 
-factions.join("Alliance", warrior.name);
-factions.join("Horde", goblin.name);
+factions.join("Alliance", warrior);
+factions.join("Horde", goblin);
 
-const areAllies = factions.areAllies(warrior.name, goblin.name);
 const turns = [
-  new AttackAction(goblin, warrior, areAllies),
+  new AttackAction(goblin, warrior, factions),
   new HealingAction(warrior),
 ];
 
