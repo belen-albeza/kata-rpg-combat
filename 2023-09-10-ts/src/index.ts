@@ -21,12 +21,13 @@ factions.join("Alliance", warrior);
 factions.join("Horde", goblin);
 
 const turns = [
-  new AttackAction(goblin, warrior, factions),
-  new HealingAction(warrior, warrior, factions),
+  AttackAction.bind(null, goblin, warrior, factions),
+  HealingAction.bind(null, warrior, warrior, factions),
 ];
 
 turns.forEach((x) => {
-  x.run();
+  const action = new x();
+  action.run();
   console.log(`\t* ${warrior}`);
   console.log(`\t* ${goblin}`);
 });
