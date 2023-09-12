@@ -9,8 +9,8 @@ const anyTargetWithHealth = (health: number) => {
   return { health, isAlive: health > 0 };
 };
 
-const anyFactionManager = () => {
-  return { areAllies: mock(() => false) };
+const anyFactionsWithAlliance = () => {
+  return { areAllies: mock(() => true) };
 };
 
 describe("HealingAction", () => {
@@ -21,7 +21,7 @@ describe("HealingAction", () => {
       anyTargetWithHealth(800)
     );
 
-    const action = new HealingAction(healer, healer, anyFactionManager());
+    const action = new HealingAction(healer, healer, anyFactionsWithAlliance());
     action.run();
 
     expect(healer.health).toBe(900);
@@ -30,7 +30,7 @@ describe("HealingAction", () => {
   it("can heal an ally", () => {
     const healer = anyHealerWithHealing(100);
     const target = anyTargetWithHealth(800);
-    const factions = anyFactionManager();
+    const factions = anyFactionsWithAlliance();
     factions.areAllies = mock(() => true);
 
     const action = new HealingAction(healer, target, factions);
@@ -49,14 +49,18 @@ describe("HealingAction", () => {
     const target = anyTargetWithHealth(1000);
 
     expect(() => {
-      const action = new HealingAction(healer, healer, anyFactionManager());
+      const action = new HealingAction(
+        healer,
+        healer,
+        anyFactionsWithAlliance()
+      );
     }).toThrow(/dead/);
   });
 
   it("throws when target is dead", () => {
     const healer = anyHealerWithHealing(100);
     const target = anyTargetWithHealth(0);
-    const factions = anyFactionManager();
+    const factions = anyFactionsWithAlliance();
     factions.areAllies = mock(() => true);
 
     expect(() => {
@@ -67,7 +71,8 @@ describe("HealingAction", () => {
   it("throws when target is not an ally", () => {
     const healer = anyHealerWithHealing(100);
     const target = anyTargetWithHealth(0);
-    const factions = anyFactionManager();
+    const factions = anyFactionsWithAlliance();
+    factions.areAllies = mock(() => false);
 
     expect(() => {
       const action = new HealingAction(healer, target, factions);

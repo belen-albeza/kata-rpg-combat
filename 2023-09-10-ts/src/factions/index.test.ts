@@ -110,6 +110,11 @@ describe("FactionManager", () => {
       expect(fm.areAllies("Garrosh", "Thrall")).toBeTrue();
     });
 
+    it("considers as allies if they are the same people", () => {
+      const fm = anyManagerWithFactions([]);
+      expect(fm.areAllies("Garrosh", "Garrosh")).toBeTrue();
+    });
+
     it("does not mark two people as allies if they belong to separate factions", () => {
       const fm = anyManagerWithFactions(["Horde", "Alliance"]);
 

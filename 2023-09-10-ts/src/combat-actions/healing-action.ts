@@ -20,9 +20,11 @@ export class HealingAction {
   ) {
     if (!source.isAlive) {
       throw new InvalidSourceError("healers cannot be dead");
-    } else if (source !== target && !factions.areAllies(source, target)) {
+    } else if (!factions.areAllies(source, target)) {
       throw new InvalidTargetError(
-        "healers can only heal allies or themselves"
+        `healers can only heal allies or themselves ${source} ${target} ${
+          source === target
+        }`
       );
     } else if (!target.isAlive) {
       throw new InvalidTargetError("healers cannot heal dead characters");

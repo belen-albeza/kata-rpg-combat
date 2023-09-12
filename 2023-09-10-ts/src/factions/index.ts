@@ -31,6 +31,10 @@ export class FactionManager {
   }
 
   areAllies(member: FactionJoiner, other: FactionJoiner): boolean {
+    if (member === other) {
+      return true;
+    }
+
     const memberships = this.#membershipsFor(member);
     const otherMemberships = this.#membershipsFor(other);
 
