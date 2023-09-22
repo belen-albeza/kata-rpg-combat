@@ -27,7 +27,9 @@ const turns = [
 
 turns.forEach((x) => {
   const action = new x();
-  action.run();
+  const outcome = action.run();
+
+  console.log(outcome);
   console.log(`\t* ${warrior}`);
   console.log(`\t* ${goblin}`);
 });

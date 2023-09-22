@@ -34,11 +34,12 @@ export class HealingAction {
     this.#target = target;
   }
 
-  run() {
+  run(): string {
     const hp = this.#source.healing;
-
-    console.log(`${this.#source} heals for ${hp} HP`);
+    const res = `${this.#source} heals for ${hp} HP`;
 
     this.#target.health += hp;
+
+    return res;
   }
 }

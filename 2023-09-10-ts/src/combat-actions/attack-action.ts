@@ -32,12 +32,13 @@ export class AttackAction {
     this.#target = target;
   }
 
-  run() {
-    console.log(
-      `${this.#source} attacks ${this.#target} and deals ${this.#damage} damage`
-    );
-
+  run(): string {
+    const res = `${this.#source} attacks ${this.#target} and deals ${
+      this.#damage
+    }`;
     this.#target.health -= this.#damage;
+
+    return res;
   }
 
   get #damage(): number {
