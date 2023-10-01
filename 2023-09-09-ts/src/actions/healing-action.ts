@@ -1,11 +1,14 @@
-import { Healer, HasHealth } from "./../types";
+import { WithHealing, HasHealth } from "./../types";
 import { Action, InvalidTargetError } from ".";
 
-export class HealingAction implements Action {
-  #source: Healer;
-  #target: HasHealth;
+export interface Healer extends WithHealing {}
+export interface HealingTarget extends HasHealth {}
 
-  constructor(source: Healer, target: HasHealth) {
+export class HealingAction implements Action {
+  #source: WithHealing;
+  #target: HealingTarget;
+
+  constructor(source: WithHealing, target: HealingTarget) {
     this.#source = source;
     this.#target = target;
   }

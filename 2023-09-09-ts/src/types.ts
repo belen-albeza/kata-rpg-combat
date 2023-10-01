@@ -7,7 +7,7 @@ export interface DamageDealer {
   attack: number;
 }
 
-export interface Healer {
+export interface WithHealing {
   healPower: number;
 }
 

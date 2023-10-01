@@ -1,6 +1,8 @@
-import { HasHealth, DamageDealer, Healer, HasLevel } from "../types";
+import { HasHealth, DamageDealer, WithHealing, HasLevel } from "../types";
 
-export class Character implements HasLevel, HasHealth, DamageDealer, Healer {
+export class Character
+  implements HasLevel, HasHealth, DamageDealer, WithHealing
+{
   level: number = 1;
   attack: number = 10;
   healPower: number = 10;
