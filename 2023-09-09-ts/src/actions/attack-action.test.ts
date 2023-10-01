@@ -49,17 +49,6 @@ describe("AttackAction", () => {
     expect(other.health).toBe(980);
   });
 
-  it.todo("kills other character when damage exceeds health", () => {
-    const c = anyAttackerWithAttack(2000);
-    const other = anyTargetWithHealth(1000);
-    const attack = new AttackAction(c, other);
-
-    attack.perform();
-
-    expect(other.health).toBe(0);
-    expect(other.isAlive).toBeFalsy();
-  });
-
   it("cannot target themselves", () => {
     const c = anyAttacker();
     const attack = new AttackAction(c, c);
