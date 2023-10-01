@@ -5,6 +5,7 @@ export interface HasHealth {
 
 export interface DamageDealer {
   attack: number;
+  attackRange: number;
 }
 
 export interface WithHealing {

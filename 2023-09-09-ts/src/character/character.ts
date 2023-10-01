@@ -1,10 +1,7 @@
 import { HasHealth, DamageDealer, WithHealing, HasLevel } from "../types";
 
-export class Character
-  implements HasLevel, HasHealth, DamageDealer, WithHealing
-{
+export class Character implements HasLevel, HasHealth, WithHealing {
   level: number = 1;
-  attack: number = 10;
   healPower: number = 10;
 
   #health: Health = new Health();
@@ -19,6 +16,23 @@ export class Character
 
   get isAlive(): boolean {
     return this.#health.isAlive;
+  }
+
+  get position(): { x: number; y: number } {
+    return { x: 0, y: 0 };
+  }
+}
+
+export class MeleeFighter extends Character implements DamageDealer {
+  attack: number;
+
+  constructor(attack: number) {
+    super();
+    this.attack = attack;
+  }
+
+  get attackRange(): number {
+    return 2;
   }
 }
 

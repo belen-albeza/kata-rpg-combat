@@ -1,12 +1,10 @@
 import { AttackAction, HealingAction } from "./actions";
-import Character from "./character";
+import { MeleeFighter } from "./character";
 
-const elf = new Character();
-elf.attack = 100;
+const elf = new MeleeFighter(100);
 elf.healPower = 50;
 
-const goblin = new Character();
-goblin.attack = 80;
+const goblin = new MeleeFighter(80);
 
 const turns = [
   new AttackAction(elf, goblin),
