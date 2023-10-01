@@ -27,15 +27,6 @@ describe("HealingAction", () => {
     expect(c.health).toBe(920);
   });
 
-  it.todo("cannot heal over 1000 hp", () => {
-    const c = anyHealerWithHealingAndHealth(1, 1000);
-
-    const healing = new HealingAction(c, c);
-    healing.perform();
-
-    expect(c.health).toBe(1000);
-  });
-
   it("cannot heal a dead character", () => {
     const c = anyHealerWithHealingAndHealth(10, 1000);
     const other = anyTargetWithHealth(0);
