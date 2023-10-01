@@ -15,3 +15,9 @@ export interface WithHealing {
 export interface HasLevel {
   level: number;
 }
+
+export type Position = { x: number; y: number };
+
+export interface HasPosition {
+  position: Position;
+}

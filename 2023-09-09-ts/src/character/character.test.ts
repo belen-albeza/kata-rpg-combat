@@ -15,6 +15,13 @@ describe("Character", () => {
     c.health = 0;
     expect(c.isAlive).toBeFalsy();
   });
+
+  it("returns their position", () => {
+    const c = new Character();
+    c.position = { x: 1, y: 2 };
+
+    expect(c.position).toStrictEqual({ x: 1, y: 2 });
+  });
 });
 
 describe("MeleeFighter", () => {

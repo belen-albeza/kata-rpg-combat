@@ -1,10 +1,20 @@
-import { HasHealth, DamageDealer, WithHealing, HasLevel } from "../types";
+import {
+  HasHealth,
+  DamageDealer,
+  WithHealing,
+  HasLevel,
+  Position,
+  HasPosition,
+} from "../types";
 
-export class Character implements HasLevel, HasHealth, WithHealing {
+export class Character
+  implements HasLevel, HasHealth, WithHealing, HasPosition
+{
   level: number = 1;
   healPower: number = 10;
 
   #health: Health = new Health();
+  position: Position = { x: 0, y: 0 };
 
   get health(): number {
     return this.#health.value;
@@ -16,10 +26,6 @@ export class Character implements HasLevel, HasHealth, WithHealing {
 
   get isAlive(): boolean {
     return this.#health.isAlive;
-  }
-
-  get position(): { x: number; y: number } {
-    return { x: 0, y: 0 };
   }
 }
 

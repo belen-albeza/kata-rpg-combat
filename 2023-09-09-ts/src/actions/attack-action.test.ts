@@ -8,9 +8,11 @@ const anyAttackerWithAttackAndLevel: (
   level: number
 ) => Attacker & AttackTarget = (attack, level) => ({
   attack,
+  attackRange: 2,
   level,
   health: 1000,
   isAlive: true,
+  position: { x: 0, y: 0 },
 });
 
 const anyAttackerWithAttack = (attack: number) => {
@@ -31,6 +33,7 @@ const anyTargetWithHealthAndLevel: (
       return this.health > 0;
     },
     level,
+    position: { x: 0, y: 0 },
   };
 };
 
@@ -77,6 +80,31 @@ describe("AttackAction", () => {
       attack.perform();
 
       expect(other.health).toBe(950);
+    });
+  });
+
+  describe("Attack range", () => {
+    it("successfully attacks targets within range", () => {
+      const c = anyAttackerWithAttack(100);
+      c.attackRange = 2;
+      const other = anyTargetWithHealth(1000);
+      other.position = { x: 1, y: 1 };
+      const action = new AttackAction(c, other);
+
+      action.perform();
+
+      expect(other.health).toBe(900);
+    });
+
+    it("fails to attacks targets out of range", () => {
+      const c = anyAttackerWithAttack(100);
+      c.attackRange = 2;
+      const other = anyTargetWithHealth(1000);
+      other.position = { x: 2, y: 2 };
+      const action = new AttackAction(c, other);
+
+      expect(() => action.perform()).toThrowError(/out of range/);
+      expect(other.health).toBe(1000);
     });
   });
 });
