@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import Character, { MeleeFighter } from ".";
+import Character, { MeleeFighter, RangedFighter } from ".";
 
 describe("Character", () => {
   it("is initialized at level 1 and 1000 health", () => {
@@ -29,5 +29,13 @@ describe("MeleeFighter", () => {
     const c = new MeleeFighter(100);
     expect(c.attack).toBe(100);
     expect(c.attackRange).toBe(2);
+  });
+});
+
+describe("RangedFighter", () => {
+  it("has an attack and range", () => {
+    const c = new RangedFighter(100);
+    expect(c.attack).toBe(100);
+    expect(c.attackRange).toBe(20);
   });
 });

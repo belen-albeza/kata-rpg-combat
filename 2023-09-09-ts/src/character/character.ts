@@ -42,6 +42,19 @@ export class MeleeFighter extends Character implements DamageDealer {
   }
 }
 
+export class RangedFighter extends Character implements DamageDealer {
+  attack: number;
+
+  constructor(attack: number) {
+    super();
+    this.attack = attack;
+  }
+
+  get attackRange(): number {
+    return 20;
+  }
+}
+
 class Health {
   static readonly #MAX_HEALTH = 1000;
   #value: number = Health.#MAX_HEALTH;
