@@ -1,22 +1,7 @@
-import { InvalidTargetError } from "./index";
 import { describe, it, expect } from "vitest";
 
-import { Character, AttackAction, HealingAction } from ".";
-
-describe("Character", () => {
-  it("is initialized at level 1 and 1000 health", () => {
-    const c = new Character();
-    expect(c.health).toBe(1000);
-    expect(c.level).toBe(1);
-  });
-
-  it("returns whether is alive or not", () => {
-    const c = new Character();
-    expect(c.isAlive).toBeTruthy();
-    c.health = 0;
-    expect(c.isAlive).toBeFalsy();
-  });
-});
+import Character from "./character";
+import { AttackAction, HealingAction } from ".";
 
 describe("AttackAction", () => {
   it("can deal damage to another character", () => {
