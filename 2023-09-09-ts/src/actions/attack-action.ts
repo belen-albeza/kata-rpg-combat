@@ -1,12 +1,14 @@
 import { DamageDealer, HasLevel, HasHealth } from "../types";
 import { Action, InvalidTargetError } from ".";
 
-interface Attacker extends DamageDealer, HasLevel {}
+export interface Attacker extends DamageDealer, HasLevel {}
+export interface AttackTarget extends HasHealth, HasLevel {}
+
 export class AttackAction implements Action {
   #source: Attacker;
-  #target: HasHealth & HasLevel;
+  #target: AttackTarget;
 
-  constructor(source: Attacker, target: HasHealth & HasLevel) {
+  constructor(source: Attacker, target: AttackTarget) {
     this.#source = source;
     this.#target = target;
   }
