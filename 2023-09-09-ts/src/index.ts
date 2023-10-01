@@ -1,25 +1,6 @@
-export class InvalidTargetError extends Error {}
+import { HasHealth, DamageDealer, Healer, HasLevel } from "./types";
 
-interface HasHealth {
-  health: number;
-  get isAlive(): boolean;
-}
-
-interface DamageDealer {
-  attack: number;
-}
-
-interface Healer {
-  healPower: number;
-}
-
-interface Attacker extends DamageDealer, HasLevel {}
-
-interface HasLevel {
-  level: number;
-}
-
-export class Character implements HasHealth, DamageDealer, Healer {
+export class Character implements HasLevel, HasHealth, DamageDealer, Healer {
   level: number = 1;
   attack: number = 10;
   healPower: number = 10;
@@ -60,7 +41,9 @@ interface Action {
   perform(): void;
 }
 
-// export class AttackAction extends CombatAction<DamageDealer & HasLevel> {
+export class InvalidTargetError extends Error {}
+
+interface Attacker extends DamageDealer, HasLevel {}
 export class AttackAction implements Action {
   #source: Attacker;
   #target: HasHealth & HasLevel;
