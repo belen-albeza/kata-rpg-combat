@@ -2,8 +2,8 @@
   (:require [clojure.test :refer :all]
             [rpg-combat.actions :refer :all]))
 
-(defn- character [& {:keys [health] :or {health 1}}]
-  {:health health})
+(defn- character [& {:keys [health level] :or {health 1 level 1}}]
+  {:health health :level level})
 
 (deftest character-attack
   (testing "a character deals damage to another character"
@@ -47,12 +47,15 @@
       (is (= (:health c) 150))
       (is (= (:hp outcome) 50))))
 
-  (testing "characters cannot be healed above 1000 health"
+  (testing "characters cannot be healed above their max health"
     (let [
-      c (character :health 999)
+      level-5-chara (character :health 999 :level 5)
+      level-6-chara (character :health 1499 :level 6)
       hp 50
-      [_, c] (heal c c hp)]
-      (is (= (:health c) 1000))))
+      [_, level-5-chara] (heal level-5-chara level-5-chara hp)
+      [_, level-6-chara] (heal level-6-chara level-6-chara hp)]
+      (is (= (:health level-5-chara) 1000))
+      (is (= (:health level-6-chara) 1500))))
 
   (testing "a dead character cannot heal"
     (let [
