@@ -8,10 +8,11 @@
   (> (:health chara) 0))
 
 (defn- add-health [chara delta]
-  (assoc chara :health  (+ (:health chara) delta)))
+  (assoc chara :health (max 0 (+ (:health chara) delta))))
 
 
 (defn attack [source target damage]
+  (when (= source target) (throw (ex-info "invalid target" {:character source})))
   (let [updated-target (add-health target (- damage))]
     [source updated-target]))
 

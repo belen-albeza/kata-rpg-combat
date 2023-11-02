@@ -23,4 +23,20 @@
       damage 50
       [src, target]  (attack src target damage)]
 
-      (is (= (:health target) 950)))))
+      (is (= (:health target) 950))))
+  (testing "health does not drop below zero when receiving damage"
+    (let [
+      src (character "Garrosh")
+      target (character "Elf" :health 1)
+      damage 50
+      [src, target]  (attack src target damage)]
+
+        (is (= (:health target) 0))
+        (is (false? (is-alive target)))))
+  (testing "a character cannot attack themselves"
+    (let [
+      c (character "Garrosh")
+      damage 50
+    ]
+      (is (thrown-with-msg? Exception #"invalid target" (attack c c damage)))
+    )))
