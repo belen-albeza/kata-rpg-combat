@@ -1,7 +1,10 @@
 (ns rpg-combat.core
   (:gen-class))
 
+(defn character [name]
+  {:name name :health 1000})
+
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (let [orc (character "Garrosh")]
+    (println (str orc))))
