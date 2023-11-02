@@ -11,9 +11,10 @@
       src (character)
       target (character :health 1000)
       damage 50
-      [src, target]  (attack src target damage)]
+      [src, target, outcome]  (attack src target damage)]
 
-      (is (= (:health target) 950))))
+      (is (= (:health target) 950))
+      (is (= (:damage outcome) 50))))
 
   (testing "health does not drop below zero when receiving damage"
       (let [
@@ -42,8 +43,9 @@
     (let [
       c (character :health 100)
       hp 50
-      [_, c] (heal c c hp)]
-      (is (= (:health c) 150))))
+      [_, c, outcome] (heal c c hp)]
+      (is (= (:health c) 150))
+      (is (= (:hp outcome) 50))))
 
   (testing "characters cannot be healed above 1000 health"
     (let [

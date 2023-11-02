@@ -14,12 +14,16 @@
   {:pre [
     (character/alive? source)
     (valid-attack-target? source target)]}
-  (let [updated-target (add-health target (- damage))]
-    [source updated-target]))
+  (let [
+    outcome {:damage damage}
+    updated-target (add-health target (- damage))]
+    [source updated-target outcome]))
 
 (defn heal [source target hp]
   {:pre [
     (character/alive? source)
     (valid-heal-target? source target)]}
-  (let [updated-target (add-health target hp)]
-    [source updated-target]))
+  (let [
+    outcome {:hp hp}
+    updated-target (add-health target hp)]
+    [source updated-target outcome]))
