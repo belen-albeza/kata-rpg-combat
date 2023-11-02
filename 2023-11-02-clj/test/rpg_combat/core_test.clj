@@ -7,20 +7,20 @@
     (let [c (character "Garrosh")]
       (is (= (:health c) 1000)))))
 
-(deftest character-is-alive
+(deftest character-alive?
   (testing "returns true when health is > 0"
     (let [c (character "Garrosh")]
-      (is (true? (is-alive c)))))
+      (is (true? (alive? c)))))
   (testing "returns false when health is zero"
     (let [c (character "Garrosh" :health 0)]
-      (is (false? (is-alive c))))))
+      (is (false? (alive? c))))))
 
 (deftest character-attack
   (testing "a character deals damage to another character"
     (let [
       src (character "Garrosh")
       target (character "Elf" :health 1000)
-      damage 50
+      damage 50;;
       [src, target]  (attack src target damage)]
 
       (is (= (:health target) 950))))
@@ -32,11 +32,18 @@
       [src, target]  (attack src target damage)]
 
         (is (= (:health target) 0))
-        (is (false? (is-alive target)))))
+        (is (false? (alive? target)))))
   (testing "a character cannot attack themselves"
     (let [
       c (character "Garrosh")
       damage 50
     ]
-      (is (thrown-with-msg? Exception #"invalid target" (attack c c damage)))
-    )))
+      (is (thrown-with-msg? AssertionError #"valid-attack-target?" (attack c c damage)))
+    ))
+  (testing "a dead character cannot attack"
+    (let [
+      src (character "Garrosh" :health 0)
+      target (character "Elf")
+      damage 50
+    ]
+      (is (thrown-with-msg? AssertionError #"alive?" (attack src target damage))))))

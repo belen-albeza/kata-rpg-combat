@@ -4,15 +4,20 @@
 (defn character [name & {:keys [health] :or {health 1000}}]
   {:name name :health health})
 
-(defn is-alive [chara]
+(defn alive? [chara]
   (> (:health chara) 0))
 
 (defn- add-health [chara delta]
   (assoc chara :health (max 0 (+ (:health chara) delta))))
 
+(defn- valid-attack-target? [source target]
+  (not (= source target))
+)
 
 (defn attack [source target damage]
-  (when (= source target) (throw (ex-info "invalid target" {:character source})))
+  {:pre [
+    (alive? source)
+    (valid-attack-target? source target)]}
   (let [updated-target (add-health target (- damage))]
     [source updated-target]))
 
