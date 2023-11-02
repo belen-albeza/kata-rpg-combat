@@ -36,7 +36,25 @@
       src (character :health 0)
       target (character)
       damage 50]
-      (is (thrown-with-msg? AssertionError #"alive?" (attack src target damage))))))
+      (is (thrown-with-msg? AssertionError #"alive?" (attack src target damage)))))
+
+  (testing "attack deals 50% more damage when character attacks a target with 5+ less level"
+    (let [
+      src (character :level 6)
+      target (character :health 1000 :level 1)
+      damage 100
+      [_, target] (attack src target damage)]
+
+      (is (= (:health target) 850))))
+
+   (testing "attack deals 50% less damage when character attacks a target with 5+ more level"
+    (let [
+      src (character :level 1)
+      target (character :health 1000 :level 6)
+      damage 100
+      [_, target] (attack src target damage)]
+
+      (is (= (:health target) 950)))))
 
 (deftest character-heal
   (testing "a character can heal themselves"
