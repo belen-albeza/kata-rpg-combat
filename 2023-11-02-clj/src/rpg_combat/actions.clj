@@ -1,5 +1,5 @@
 (ns rpg-combat.actions
-  (:require [rpg-combat.core :as core]))
+  (:require [rpg-combat.character :as character]))
 
 (defn- add-health [chara delta]
   (assoc chara :health (min (max 0 (+ (:health chara) delta)) 1000)))
@@ -12,14 +12,14 @@
 
 (defn attack [source target damage]
   {:pre [
-    (core/alive? source)
+    (character/alive? source)
     (valid-attack-target? source target)]}
   (let [updated-target (add-health target (- damage))]
     [source updated-target]))
 
 (defn heal [source target hp]
   {:pre [
-    (core/alive? source)
+    (character/alive? source)
     (valid-heal-target? source target)]}
   (let [updated-target (add-health target hp)]
     [source updated-target]))
