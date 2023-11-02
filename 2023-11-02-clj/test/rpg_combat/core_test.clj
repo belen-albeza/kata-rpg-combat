@@ -47,3 +47,25 @@
       damage 50
     ]
       (is (thrown-with-msg? AssertionError #"alive?" (attack src target damage))))))
+
+(deftest character-heal
+  (testing "a character can heal themselves"
+    (let [
+      c (character "Garrosh" :health 100)
+      hp 50
+      [_, c] (heal c c hp)
+    ]
+      (is (= (:health c) 150))))
+  (testing "characters cannot be healed above 1000 health"
+    (let [
+      c (character "Garrosh" :health 999)
+      hp 50
+      [_, c] (heal c c hp)
+    ]
+      (is (= (:health c) 1000))))
+  (testing "a dead character cannot heal"
+    (let [
+      c (character "Garrosh" :health 0)
+      hp 50
+    ]
+      (is (thrown-with-msg? AssertionError #"alive?" (heal c c hp))))))
