@@ -3,6 +3,7 @@
     [rpg-combat.character :as chara]
     [rpg-combat.actions :as actions]
     [rpg-combat.factions.faction-manager :as factions]
+    [rpg-combat.items.potion :as potion]
     [rpg-combat.core :refer :all]))
 
 (deftest core-attack-test
@@ -55,3 +56,22 @@
       [_ orc2 _] (actions/heal orc orc2 50 :allies? allies?)]
 
       (is (= (:health orc2) 950)))))
+
+(deftest core-potions-test
+  (testing "A character can heal by drinking a potion"
+    (let [
+      orc (chara/character "Garrosh" :health 900)
+      p (potion/potion :health 50)
+      [p orc] (potion/drink p (partial chara/add-health orc))]
+
+      (is (potion/destroyed? p))
+      (is (= (:health orc) 950))))
+
+  (testing "A potion keeps any leftover hp"
+    (let [
+      orc (chara/character "Garrosh" :health 999)
+      p (potion/potion :health 50)
+      [p orc] (potion/drink p (partial chara/add-health orc))]
+
+      (is (= (:health p) 49))
+      (is (= (:health orc) 1000)))))

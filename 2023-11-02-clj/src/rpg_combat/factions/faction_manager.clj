@@ -28,7 +28,6 @@
 
     (assoc fm faction-id f)))
 
-
 (defn leave [fm faction-id member]
   {:pre [
     (contains? fm faction-id)

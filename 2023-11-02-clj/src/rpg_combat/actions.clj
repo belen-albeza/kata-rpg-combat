@@ -19,8 +19,9 @@
     (valid-attack-target? source target allies?)]}
   (let [
     total-damage (int (* (damage-modifier source target) damage))
-    outcome {:damage total-damage}
-    updated-target (character/add-health target (- total-damage))]
+    [updated-target add-health-outcome] (character/add-health target (- total-damage))
+    outcome {:damage total-damage :hp (:hp add-health-outcome)}]
+
     [source updated-target outcome]))
 
 (defn- valid-heal-target? [source target allies?]
@@ -28,11 +29,12 @@
     (identical? source target)
     (allies? source target)))
 
-(defn heal [source target hp & {:keys [allies? ] :or { allies? (fn [_ _] false)}}]
+(defn heal [source target healing & {:keys [allies? ] :or { allies? (fn [_ _] false)}}]
   {:pre [
     (character/alive? source)
     (valid-heal-target? source target allies?)]}
   (let [
-    outcome {:hp hp}
-    updated-target (character/add-health target hp)]
+    [updated-target add-health-outcome] (character/add-health target healing)
+    outcome {:healing healing :hp (:hp add-health-outcome)}]
+
     [source updated-target outcome]))
