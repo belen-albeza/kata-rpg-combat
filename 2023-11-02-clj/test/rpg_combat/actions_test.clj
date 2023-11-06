@@ -38,6 +38,15 @@
       damage 50]
       (is (thrown-with-msg? AssertionError #"alive?" (attack src target damage)))))
 
+  (testing "a character cannot attack allies"
+    (let [
+      src (character)
+      target (character)
+      fn-allies? (fn [_ _] true)
+      damage 50]
+
+      (is (thrown-with-msg? AssertionError #"valid-attack-target?" (attack src target damage :allies? fn-allies?)))))
+
   (testing "attack deals 50% more damage when character attacks a target with 5+ less level"
     (let [
       src (character :level 6)
