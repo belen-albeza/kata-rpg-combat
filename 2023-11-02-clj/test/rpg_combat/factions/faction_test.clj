@@ -15,10 +15,9 @@
   (testing "adds a new member"
     (let [
       f (faction :horde)
-      f (add-member f "foo")
-      members (:members f)]
+      f (add-member f "foo")]
 
-      (is (some? (members "foo")))))
+      (is (true? (has-member? f "foo")))))
 
   (testing "does not add the same member twice"
      (let [
@@ -28,7 +27,7 @@
       members (:members f)]
 
       (is (= (count members) 1))
-      (is (some? (members "foo"))))))
+      (is (true? (has-member? f "foo"))))))
 
 (deftest faction-remove
   (testing "removes a member"
@@ -38,4 +37,4 @@
       members (:members f)]
 
     (is (= (count members) 1))
-    (is (not (some? (members "foo")))))))
+    (is (false? (has-member? f "foo"))))))
