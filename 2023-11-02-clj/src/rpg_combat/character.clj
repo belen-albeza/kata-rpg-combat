@@ -7,9 +7,9 @@
   (let [max-hp (max-health chara)]
     (assoc chara :health (min (max 0 (+ (:health chara) delta)) max-hp))))
 
-(defn character [name & {:keys [health level] :or { health ##Inf level 1}}]
+(defn character [id & {:keys [health level] :or { health ##Inf level 1}}]
   (let [max-hp (max-health {:level level})]
-    {:name name :health (max (min health max-hp) 0) :level level}))
+    {:id id :health (max (min health max-hp) 0) :level level}))
 
 (defn alive? [chara]
   (> (:health chara) 0))

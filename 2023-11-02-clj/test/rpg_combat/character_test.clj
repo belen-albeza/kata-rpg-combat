@@ -3,6 +3,10 @@
             [rpg-combat.character :refer :all]))
 
 (deftest character-creation
+  (testing "character gets created with the given id"
+    (let [c (character "Garrosh")]
+      (is (= (:id c) "Garrosh"))))
+
   (testing "character gets created with max health"
     (let [
       level-5 (character "Garrosh" :level 1)
