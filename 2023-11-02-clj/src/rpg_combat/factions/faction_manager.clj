@@ -9,7 +9,6 @@
 
 (defn factions [fm] fm)
 
-
 (defn- valid-member? [member]
   (not (nil? (:id member))))
 

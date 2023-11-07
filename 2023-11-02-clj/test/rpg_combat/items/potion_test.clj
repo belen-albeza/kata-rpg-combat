@@ -23,4 +23,4 @@
       [p outcome] (consume p 20)]
 
       (is (= (:health p) 80))
-      (is (= (:hp outcome) 20)))))
+      (is (= (:hp outcome) -20)))))

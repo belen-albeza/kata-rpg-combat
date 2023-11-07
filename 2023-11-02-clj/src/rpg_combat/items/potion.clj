@@ -16,4 +16,4 @@
     health (- (:health p) actual-hp)
     p (assoc p :health health)]
 
-    [p {:hp actual-hp}]))
+    [p {:hp (- actual-hp)}]))

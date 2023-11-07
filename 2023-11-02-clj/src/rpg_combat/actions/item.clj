@@ -19,7 +19,7 @@
   (let [
     hp (- (character/max-health chara) (:health chara))
     [potion outcome] (potion/consume potion hp)
-    actual-hp (:hp outcome)
+    actual-hp (abs (:hp outcome))
     chara (character/add-health chara actual-hp)]
 
     [chara potion {:hp actual-hp}]))

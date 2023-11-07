@@ -18,6 +18,7 @@
       (is (= (:health item) 0))
       (is (= (:health chara) 920))
       (is (= outcome {:hp 20}))))
+
   (testing "A potion keeps any leftover hp after being used"
     (let [
       chara (character :health 999)
@@ -26,6 +27,7 @@
 
       (is (= (:health chara) 1000))
       (is (= (:health item) 9))))
+
   (testing "Depleted potions cannot be used"
     (let [
       chara (character :health 900)
