@@ -16,21 +16,11 @@
       (is (false? (destroyed? full)))
       (is (true? (destroyed? depleted))))))
 
-
-(deftest potion-drink
-  (testing "A potion can be drunk for healing by consuming its hp"
+(deftest potion-consume
+  (testing "A potion can be used by consuming its hp"
     (let [
       p (potion :health 100)
-      add-health (fn [hp] [{:health hp} {:hp hp}])
-      [p metadata] (drink p add-health)]
+      [p outcome] (consume p 20)]
 
-      (is (= (:health p) 0))
-      (is (= metadata {:health 100}))))
-
-  (testing "A potion keeps any leftover hp after being drunk"
-    (let [
-      p (potion :health 100)
-      add-health (fn [hp] [{:health 200} {:hp 25}])
-      [p metadata] (drink p add-health)]
-
-      (is (= (:health p) 75)))))
+      (is (= (:health p) 80))
+      (is (= (:hp outcome) 20)))))

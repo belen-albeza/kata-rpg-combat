@@ -1,0 +1,17 @@
+(ns rpg-combat.actions.heal
+  (:require [rpg-combat.character :as character]))
+
+(defn- valid-heal-target? [source target allies?]
+  (or
+    (identical? source target)
+    (allies? source target)))
+
+(defn heal [source target healing & {:keys [allies? ] :or { allies? (fn [_ _] false)}}]
+  {:pre [
+    (character/alive? source)
+    (valid-heal-target? source target allies?)]}
+  (let [
+    [updated-target add-health-outcome] (character/add-health target healing)
+    outcome {:healing healing :hp (:hp add-health-outcome)}]
+
+    [source updated-target outcome]))

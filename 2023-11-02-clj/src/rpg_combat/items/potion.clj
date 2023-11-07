@@ -9,15 +9,11 @@
 (defn destroyed? [p]
   (<= (:health p) 0))
 
-(defn- consume-hp [p hp]
-  (let [health (- (:health p) hp)]
-    (assoc p :health health)))
-
-(defn drink [p add-health]
-  {:pre [(potion? p) (not (destroyed? p))]}
-
+(defn consume [p max-hp]
+  {:pre [(potion? p)]}
   (let [
-    [chara outcome] (add-health (:health p))
-    p (consume-hp p (:hp outcome))]
+    actual-hp (min max-hp (:health p))
+    health (- (:health p) actual-hp)
+    p (assoc p :health health)]
 
-    [p chara]))
+    [p {:hp actual-hp}]))
