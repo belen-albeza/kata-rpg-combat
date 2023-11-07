@@ -18,7 +18,15 @@
       fm (add-faction fm :horde)
       fm (join fm :horde {:id "Garrosh"})
     ]
-    (is (true? (belongs? fm :horde {:id "Garrosh"}))))))
+    (is (true? (belongs? fm :horde {:id "Garrosh"})))))
+
+  (testing "Cannot add non-characters to a faction"
+    (let [
+      fm (faction-manager)
+      fm (add-faction fm :horde)
+      non-chara {:foo "bar"}]
+
+      (is (thrown-with-msg? AssertionError #"valid-member" (join fm :horde non-chara))))))
 
 (deftest faction-manager-leave
   (testing "Removes a member from the given faction"

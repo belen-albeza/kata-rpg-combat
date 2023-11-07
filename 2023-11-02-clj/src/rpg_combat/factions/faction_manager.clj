@@ -9,6 +9,10 @@
 
 (defn factions [fm] fm)
 
+
+(defn- valid-member? [member]
+  (not (nil? (:id member))))
+
 (defn belongs? [fm faction-id member]
   {:pre [
     (contains? fm faction-id)
@@ -20,7 +24,7 @@
 (defn join [fm faction-id member]
   {:pre [
     (contains? fm faction-id)
-    (not (nil? (:id member)))]}
+    (valid-member? member)]}
 
   (let [
     f (fm faction-id)

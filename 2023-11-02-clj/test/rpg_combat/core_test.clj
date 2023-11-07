@@ -85,4 +85,13 @@
       [orc potion _] (actions.item/use-item orc potion)]
 
       (is (= (:health potion) 49))
-      (is (= (:health orc) 1000)))))
+      (is (= (:health orc) 1000))))
+
+  (testing "A potion cannot join a faction"
+    (let [
+      potion (potion/potion :health 50)
+      fm (factions/faction-manager)
+      fm (factions/add-faction fm :horde)]
+
+    (is (thrown? AssertionError (factions/join fm :horde potion))))))
+
