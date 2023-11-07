@@ -73,7 +73,7 @@
     (let [
       orc (chara/character "Garrosh" :health 900)
       potion (potion/potion :health 50)
-      [orc potion _] (actions.item/use-item orc potion)]
+      [orc potion _] (actions.item/use-item potion orc)]
 
       (is (potion/destroyed? potion))
       (is (= (:health orc) 950))))
@@ -82,7 +82,7 @@
     (let [
       orc (chara/character "Garrosh" :health 999)
       potion (potion/potion :health 50)
-      [orc potion _] (actions.item/use-item orc potion)]
+      [orc potion _] (actions.item/use-item potion orc)]
 
       (is (= (:health potion) 49))
       (is (= (:health orc) 1000))))
