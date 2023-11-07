@@ -3,6 +3,7 @@
     [rpg-combat.character :as chara]
     [rpg-combat.actions.attack :as actions.attack]
     [rpg-combat.actions.heal :as actions.heal]
+    [rpg-combat.actions.item :as actions.item]
     [rpg-combat.factions.faction-manager :as factions]
     [rpg-combat.items.potion :as potion]
     [rpg-combat.core :refer :all]))
@@ -56,23 +57,32 @@
       allies? (partial factions/allies? fm)
       [_ orc2 _] (actions.heal/heal orc orc2 50 :allies? allies?)]
 
-      (is (= (:health orc2) 950)))))
+      (is (= (:health orc2) 950))))
 
-;; (deftest core-potions-test
-;;   (testing "A character can heal by drinking a potion"
-;;     (let [
-;;       orc (chara/character "Garrosh" :health 900)
-;;       p (potion/potion :health 50)
-;;       [p orc] (potion/drink p (partial chara/add-health orc))]
+   (testing "A character cannot heal items"
+    (let [
+      orc (chara/character "Garrosh")
+      potion (potion/potion :health 20)
+      always-allies (fn [_ _] true)
+      ]
 
-;;       (is (potion/destroyed? p))
-;;       (is (= (:health orc) 950))))
+      (is (thrown? AssertionError (actions.heal/heal orc potion 30 :allies? always-allies))))))
 
-;;   (testing "A potion keeps any leftover hp"
-;;     (let [
-;;       orc (chara/character "Garrosh" :health 999)
-;;       p (potion/potion :health 50)
-;;       [p orc] (potion/drink p (partial chara/add-health orc))]
+(deftest core-potions-test
+  (testing "A character can heal by using a potion"
+    (let [
+      orc (chara/character "Garrosh" :health 900)
+      potion (potion/potion :health 50)
+      [orc potion _] (actions.item/use-item orc potion)]
 
-;;       (is (= (:health p) 49))
-;;       (is (= (:health orc) 1000)))))
+      (is (potion/destroyed? potion))
+      (is (= (:health orc) 950))))
+
+  (testing "A potion keeps any leftover hp"
+    (let [
+      orc (chara/character "Garrosh" :health 999)
+      potion (potion/potion :health 50)
+      [orc potion _] (actions.item/use-item orc potion)]
+
+      (is (= (:health potion) 49))
+      (is (= (:health orc) 1000)))))

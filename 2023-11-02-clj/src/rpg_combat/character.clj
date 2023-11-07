@@ -1,6 +1,11 @@
 (ns rpg-combat.character)
 
-(defn- max-health [chara]
+(defn character? [chara]
+  (and
+    (not (nil? (:health chara)))
+    (not (nil? (:level chara)))))
+
+(defn max-health [chara]
   (if (<= (:level chara) 5) 1000 1500))
 
 (defn add-health [chara delta]

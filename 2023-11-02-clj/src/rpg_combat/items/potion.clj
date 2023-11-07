@@ -3,7 +3,7 @@
 (defn potion [& {:keys [health] :or {health 100}}]
   {:health health})
 
-(defn- potion? [p]
+(defn potion? [p]
   (not (nil? (:health p))))
 
 (defn destroyed? [p]

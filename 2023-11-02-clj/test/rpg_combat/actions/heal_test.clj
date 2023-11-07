@@ -35,4 +35,11 @@
       src (character)
       other (character :health 100)
       hp 50]
+      (is (thrown-with-msg? AssertionError #"valid-heal-target?" (heal src other hp)))))
+
+  (testing "a character cannot non-characters"
+    (let [
+      src (character)
+      other {:health 100}
+      hp 50]
       (is (thrown-with-msg? AssertionError #"valid-heal-target?" (heal src other hp))))))
