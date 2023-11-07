@@ -6,11 +6,9 @@
 (defn add-health [chara delta]
   (let [
     max-hp (max-health chara)
-    health (min (max 0 (+ (:health chara) delta)) max-hp)
-    hp (- health (:health chara))
-    chara (assoc chara :health health)]
+    health (min (max 0 (+ (:health chara) delta)) max-hp)]
 
-    [chara {:hp hp}]))
+    (assoc chara :health health)))
 
 (defn character [id & {:keys [health level] :or { health ##Inf level 1}}]
   (let [max-hp (max-health {:level level})]

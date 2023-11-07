@@ -11,7 +11,7 @@
     (character/alive? source)
     (valid-heal-target? source target allies?)]}
   (let [
-    [updated-target add-health-outcome] (character/add-health target healing)
-    outcome {:healing healing :hp (:hp add-health-outcome)}]
+    updated-target (character/add-health target healing)
+    outcome {:healing healing }]
 
     [source updated-target outcome]))

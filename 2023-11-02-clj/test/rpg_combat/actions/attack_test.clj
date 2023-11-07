@@ -64,4 +64,3 @@
       [_, target] (attack src target damage)]
 
       (is (= (:health target) 950)))))
-

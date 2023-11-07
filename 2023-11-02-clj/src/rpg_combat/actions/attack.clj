@@ -19,7 +19,7 @@
     (valid-attack-target? source target allies?)]}
   (let [
     total-damage (int (* (damage-modifier source target) damage))
-    [updated-target add-health-outcome] (character/add-health target (- total-damage))
-    outcome {:damage total-damage :hp (:hp add-health-outcome)}]
+    updated-target (character/add-health target (- total-damage))
+    outcome {:damage total-damage }]
 
     [source updated-target outcome]))
