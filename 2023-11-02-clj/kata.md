@@ -58,3 +58,13 @@ The problem is broken down into several user stories to help you to focus on doi
   - The amount of damage is fixed at the time the weapon is created.
   - Every time the weapon is used, the Health is reduced by `1`.
   - Magical Weapons cannot give Health to a Character.
+
+### Changing level
+
+- Level 1 characters that survive `1000` damage points gain a level, (this may be counted over several battles)
+  - A character cannot gain a level while receiving damage, it happens directly afterwards (if the player is still alive)
+  - Level 2 Characters need to survive an additional 2000 damage points to gain a level, Level 3 Characters need to survive an additional 3000, and so on.
+- Level 1 Characters that have ever been part of 3 distinct factions gain a level
+  - Level 2 Characters need to join an additional 3 distinct factions to gain a level, Level 3 Characters need to join an additional 3, and so on.
+- The maximum Level for Characters is 10
+- Characters cannot lose a level they have gained
