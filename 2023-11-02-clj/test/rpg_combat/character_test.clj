@@ -71,13 +71,19 @@
       c (character "Garrosh" :xp 0 :level 1)
       c (add-xp c 1000)]
 
-      (is (= (:xp c) 0))
       (is (= (:level c) 2))))
+
+  (testing "characters keep xp after leveling up"
+    (let [
+      c (character "Garrosh" :xp 0 :level 1)
+      c (add-xp c 1001)]
+      (is (= (:level c) 2))
+      (is (= (:xp c) 1001))))
 
   (testing "the amount of xp needed to level up increases with each level"
     (let [
-      c1 (character "Garrosh" :xp 0 :level 2)
-      c2 (character "Thrall" :xp 0 :level 2)
+      c1 (character "Garrosh" :xp 1000 :level 2)
+      c2 (character "Thrall" :xp 1000 :level 2)
       c1 (add-xp c1 1000)
       c2 (add-xp c2 2000)]
 

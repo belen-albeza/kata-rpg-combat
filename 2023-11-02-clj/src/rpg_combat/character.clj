@@ -22,12 +22,15 @@
     (assoc chara :level level)))
 
 (defn- xp-for-level-up [chara]
-  (* (:level chara) 1000))
+  (let [
+    levels (range (+ (:level chara) 1))]
+  (* (reduce + levels) 1000)))
 
 (defn add-xp [chara delta]
   (let [
-    xp (+ (:xp chara) delta)]
-    (if (>= xp (xp-for-level-up chara)) (level-up chara) (assoc chara :xp xp))))
+    xp (+ (:xp chara) delta)
+    chara (assoc chara :xp xp) ]
+    (if (>= xp (xp-for-level-up chara)) (level-up chara) chara)))
 
 (defn character [id & {:keys [health level xp] :or { health ##Inf level 1 xp 0}}]
   (let [
