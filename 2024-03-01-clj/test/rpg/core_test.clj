@@ -45,4 +45,13 @@
     (let [c (character :healer, {:health 900})
           [c hp] (heal c 10)]
       (is (= (:health c) 910))
-      (is (= hp 10)))))
+      (is (= hp 10))))
+
+  (testing "A character cannot heal above 1000 hp"
+    (let [c (character :healer {:health 999})
+          [c _] (heal c 10)]
+      (is (= (:health c) 1000))))
+
+  (testing "Dead characters cannot heal"
+    (let [c (character :healer {:health 0})]
+      (is (thrown-with-msg? Exception #"cannot heal" (heal c 10))))))
