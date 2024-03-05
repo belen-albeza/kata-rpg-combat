@@ -1,4 +1,4 @@
-(ns rpg.chara (:gen-class))
+(ns rpg.chara)
 
 (defprotocol HasID
   (uid [self]))
