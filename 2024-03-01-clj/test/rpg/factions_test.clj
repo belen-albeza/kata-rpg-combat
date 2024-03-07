@@ -1,13 +1,10 @@
 (ns rpg.factions-test
   (:require [clojure.test :refer :all]
-            [rpg.chara :refer [HasID]]
+            [shrubbery.core :refer :all]
+            [rpg.common :refer [HasID]]
             [rpg.factions :refer :all]))
 
-(defrecord Member [id]
-  HasID
-  (uid [self] (:id self)))
-
-(defn- any-member [] (->Member :any))
+(defn- any-member [& {:keys [id] :or {id :any}}] (stub HasID {:uid id}))
 
 (deftest faction-manager-creation
   (testing "Manager is created with an empty list of factions as default"
@@ -55,8 +52,8 @@
 (deftest faction-manager-join-faction
   (testing "A member can leave a faction"
     (let [fm (faction-manager {:horde #{:garrosh}})
-          fm (leave fm :horde (->Member :garrosh))]
-      (is (not (belongs? fm :horde (->Member :garrosh))))))
+          fm (leave fm :horde (any-member {:id :garrosh}))]
+      (is (not (belongs? fm :horde (any-member {:id :garrosh}))))))
   (testing "Raises an exception when trying to leave a non-existing faction"
     (let [fm (faction-manager)]
       (is (thrown-with-msg? Exception #"does not exist" (leave fm :horde (any-member)))))))
@@ -64,10 +61,10 @@
 (deftest faction-manager-allies
   (testing "Two members that have a faction in common are allies"
     (let [fm (faction-manager {:horde #{:garrosh :thrall}})]
-      (is (allies? fm (->Member :garrosh) (->Member :thrall)))))
+      (is (allies? fm (any-member {:id :garrosh}) (any-member {:id :thrall})))))
   (testing "Two members with no faction in common are not allies"
     (let [fm (faction-manager {:horde #{:garrosh} :alliance #{:anduin}})]
-      (is (not (allies? fm (->Member :garrosh) (->Member :anduin))))))
+      (is (not (allies? fm (any-member {:id :garrosh}) (any-member {:id :anduin}))))))
   (testing "Two members that don't belong to any faction are not allies"
     (let [fm (faction-manager)]
-      (is (not (allies? fm (->Member :garrosh) (->Member :anduin)))))))
+      (is (not (allies? fm (any-member {:id :garrosh}) (any-member {:id :anduin})))))))

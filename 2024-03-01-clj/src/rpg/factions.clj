@@ -1,5 +1,5 @@
 (ns rpg.factions
-  (:require [rpg.chara :refer [HasID uid]]
+  (:require [rpg.common :refer [HasID uid]]
             [clojure.set :as set]))
 
 (defprotocol FactionManager

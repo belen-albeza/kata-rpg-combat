@@ -1,14 +1,5 @@
-(ns rpg.chara)
-
-(defprotocol HasID
-  (uid [self]))
-
-(defprotocol HasHealth
-  (alive? [self])
-  (add-health [self delta]))
-
-(defprotocol HasLevel
-  (level [self]))
+(ns rpg.chara
+  (:require [rpg.common :refer [HasHealth, HasLevel, HasID]]))
 
 (defrecord Chara [id health level])
 

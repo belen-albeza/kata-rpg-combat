@@ -1,5 +1,6 @@
 (ns rpg.chara-test
   (:require [clojure.test :refer :all]
+            [rpg.common :refer :all]
             [rpg.chara :refer :all]))
 
 (deftest character-creation

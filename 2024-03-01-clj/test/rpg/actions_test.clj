@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [shrubbery.core :refer :all]
             [rpg.actions :refer :all]
-            [rpg.chara :refer [HasHealth HasID HasLevel add-health]]))
+            [rpg.common :refer [HasHealth HasID HasLevel add-health]]))
 
 (defn- any-attacker [& {:keys [level id health] :or {level 1 id :attacker health 1000}}]
   (stub HasLevel {:level level} HasID {:uid id} HasHealth {:alive? (> health 0)}))

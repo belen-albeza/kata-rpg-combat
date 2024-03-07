@@ -1,5 +1,5 @@
 (ns rpg.actions
-  (:require [rpg.chara :as c]))
+  (:require [rpg.common :as c]))
 
 (defprotocol Action
   (run [self]))
