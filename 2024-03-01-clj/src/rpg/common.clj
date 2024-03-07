@@ -9,3 +9,6 @@
 
 (defprotocol HasLevel
   (level [self]))
+
+(defprotocol HasAlliances
+  (allies? [self entity other]))

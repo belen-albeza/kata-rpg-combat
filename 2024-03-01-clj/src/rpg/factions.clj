@@ -1,5 +1,5 @@
 (ns rpg.factions
-  (:require [rpg.common :refer [HasID uid]]
+  (:require [rpg.common :refer [HasID uid HasAlliances]]
             [clojure.set :as set]))
 
 (defprotocol FactionManager
@@ -7,8 +7,7 @@
   (add [self faction])
   (belongs? [self faction member])
   (join [self faction member])
-  (leave [self faction member])
-  (allies? [self member other]))
+  (leave [self faction member]))
 
 (defn- members-of [manager faction]
   (assert (keyword? faction) "faction ID needs to be a keyword")
@@ -53,6 +52,7 @@
           updated-factions (assoc (:factions self) faction updated-members)]
       (assoc self :factions updated-factions)))
 
+  HasAlliances
   (allies? [self member other]
     (let [factions-member (factions-for self member)
           factions-other (factions-for self other)

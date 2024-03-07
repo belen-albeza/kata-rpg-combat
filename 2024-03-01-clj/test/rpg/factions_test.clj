@@ -1,7 +1,7 @@
 (ns rpg.factions-test
   (:require [clojure.test :refer :all]
             [shrubbery.core :refer :all]
-            [rpg.common :refer [HasID]]
+            [rpg.common :refer [HasID allies?]]
             [rpg.factions :refer :all]))
 
 (defn- any-member [& {:keys [id] :or {id :any}}] (stub HasID {:uid id}))
