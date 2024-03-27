@@ -3,6 +3,7 @@
             [rpg.chara :as chara]
             [rpg.factions :as factions]
             [rpg.actions :as actions]
+            [rpg.magical-items :as items]
             [rpg.core :refer :all]))
 
 (deftest actions-test
@@ -53,3 +54,15 @@
           [orc troll hp] (actions/run healing)]
       (is (= hp 50))
       (is (= (:health troll) 950)))))
+
+(deftest magical-items-test
+  (testing "Characters cannot heal magical items"
+    (let [orc (chara/character :garrosh)
+          potion (items/potion 100)]
+      (is (thrown-with-msg? AssertionError #"invalid target" (actions/heal orc potion 50)))))
+
+  (testing "Magical items cannot belong to factions"
+    (let [fm (factions/faction-manager)
+          fm (factions/add fm :horde)
+          potion (items/potion 50)]
+      (is (thrown-with-msg? AssertionError #"invalid member" (factions/join fm :horde potion))))))

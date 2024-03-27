@@ -13,6 +13,9 @@
 (defn- any-healer [& {:keys [id] :or {id :healer}}]
   (mock HasID {:uid id} HasHealth {:alive? true}))
 
+(defn- any-potion [& {:keys [hp] :or {hp 100}}]
+  (mock HasHealth))
+
 (deftest actions-attack
   (testing "An attacker can deal damage to a target"
     (let [c (any-attacker)
@@ -92,3 +95,8 @@
           other (any-target)
           alliances (stub HasAlliances {:allies? false})]
       (is (thrown-with-msg? Exception #"cannot target non-allies" (heal c other 50 alliances))))))
+
+(deftest actions-use-potion
+  (testing "A healer can use a magical potion to heal")
+    (let [c (any-healer)
+          p ()]))

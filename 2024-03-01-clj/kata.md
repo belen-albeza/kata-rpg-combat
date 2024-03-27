@@ -50,7 +50,7 @@ The problem is broken down into several user stories to help you to focus on doi
   - When reduced to `0` Health, Magical Objects are Destroyed.
   - Magical Objects cannot be Healed by Characters.
   - Magical Objects do not belong to Factions; they are neutral.
-- Characters can gain health from a **Healing Magical Object**.
+- Characters can gain health from a **Healing Magical Potion**.
   - Characters can gain any amount of health from the Object, up to its maximum and theirs.
   - Healing Magical Objects cannot deal Damage.
 - Characters can deal Damage by using a **Magical Weapon**.

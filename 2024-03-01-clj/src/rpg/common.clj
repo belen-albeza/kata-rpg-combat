@@ -7,6 +7,8 @@
   (alive? [self])
   (add-health [self delta]))
 
+(defmulti max-health class)
+
 (defprotocol HasLevel
   (level [self]))
 

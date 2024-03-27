@@ -1,9 +1,8 @@
 (ns rpg.chara
-  (:require [rpg.common :refer [HasHealth, HasLevel, HasID]]))
+  (:require [rpg.common :refer [HasHealth, HasLevel, HasID, max-health]]))
 
 (defrecord Chara [id health level])
 
-(defmulti max-health class)
 (defmethod max-health Chara [self] (if (>= (:level self) 6) 1500 1000))
 
 (extend-type Chara
