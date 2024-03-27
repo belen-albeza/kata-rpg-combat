@@ -20,7 +20,17 @@
           healing (actions/heal orc orc 10)
           [_ orc hp] (actions/run healing)]
       (is (= (:health orc) 960))
-      (is (= hp 10))))
+      (is (= hp 10)))
+
+  (testing "A character can attack another with a magical weapon"
+    (let [orc (chara/character :garrosh)
+          elf (chara/character :malfurion {:health 1000})
+          axe (items/weapon 10 100)
+          attack (actions/attack-with-weapon orc elf axe)
+          [_ elf axe damage] (actions/run attack)]
+      (is (= (:health elf) 900))
+      (is (= damage -100))
+      (is (= (:health axe) 9)))))
 
 (deftest factions-test
   (testing "A character can join a faction"

@@ -14,3 +14,6 @@
 
 (defprotocol HasAlliances
   (allies? [self entity other]))
+
+(defprotocol HasDamage
+  (damage [self]))

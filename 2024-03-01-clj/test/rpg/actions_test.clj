@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [shrubbery.core :refer :all]
             [rpg.actions :refer :all]
-            [rpg.common :refer [HasHealth HasID HasLevel add-health HasAlliances]]))
+            [rpg.common :refer [HasHealth HasID HasLevel add-health HasAlliances HasDamage]]))
 
 (defn- any-attacker [& {:keys [level id health] :or {level 1 id :attacker health 1000}}]
   (stub HasLevel {:level level} HasID {:uid id} HasHealth {:alive? (> health 0)}))
@@ -15,6 +15,9 @@
 
 (defn- any-potion [& {:keys [hp] :or {hp 100}}]
   (mock HasHealth))
+
+(defn any-weapon [& {:keys [health damage] :or {health 10 damage 1}}]
+  (mock HasHealth {:alive? (> health 0)} HasDamage {:damage damage}))
 
 (deftest actions-attack
   (testing "An attacker can deal damage to a target"
@@ -39,20 +42,20 @@
           other (any-target {:level 1})
           action (attack c other 100)
           [_ _ damage] (run action)]
-          (is (= damage -150))))
+      (is (= damage -150))))
 
   (testing "Attackers deal -50% damage when they attack a target that is 5 levels higher or more"
     (let [c (any-attacker {:level 1})
           other (any-target {:level 6})
           action (attack c other 100)
           [_ _ damage] (run action)]
-          (is (= damage -50))))
+      (is (= damage -50))))
 
   (testing "Attackers cannot target allies"
     (let [c (any-attacker)
           other (any-target)
           alliances (stub HasAlliances {:allies? true})]
-          (is (thrown-with-msg? Exception #"cannot target allies" (attack c other 10 {:alliances alliances})))))
+      (is (thrown-with-msg? Exception #"cannot target allies" (attack c other 10 {:alliances alliances})))))
 
   (testing "Attackers can target non-allies"
     (let [c (any-attacker)
@@ -60,7 +63,31 @@
           alliances (stub HasAlliances {:allies? false})
           action (attack c other 10 alliances)
           [_ _ damage] (run action)]
-          (is (= damage) -10))))
+      (is (= damage) -10))))
+
+(deftest actions-attack-with-weapon
+  (testing "Attackers can use a weapon to attack"
+    (let [c (any-attacker)
+          other (any-target)
+          weapon (any-weapon {:damage 10})
+          action (attack-with-weapon c other weapon)
+          [_ _ _ damage] (run action)]
+      (is (= damage -10))
+      (is (received? other add-health [-10]))))
+
+  (testing "Weapons get their health decreased after an attack"
+    (let [c (any-attacker)
+          other (any-target)
+          weapon (any-weapon {:damage 10 :health 1})
+          action (attack-with-weapon c other weapon)
+          _ (run action)]
+      (is (received? weapon add-health [-1]))))
+
+  (testing "Attackers must use a non-destroyed weapon"
+    (let [c (any-attacker)
+          other (any-target)
+          weapon (any-weapon {:health 0})]
+      (is (thrown-with-msg? Exception #"cannot use destroyed" (attack-with-weapon c other weapon))))))
 
 (deftest actions-heal
   (testing "A healer can heal themselves"
