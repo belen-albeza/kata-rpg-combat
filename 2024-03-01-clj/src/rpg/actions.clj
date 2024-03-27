@@ -19,7 +19,7 @@
     (let [updated-target (c/add-health target hp)]
       [source updated-target hp])))
 
-(defn attack [source target damage & [alliances]]
+(defn attack [source target damage & {:keys [alliances item]}]
   (assert (and (satisfies? c/HasID source) (satisfies? c/HasLevel source) (satisfies? c/HasHealth source)) "invalid attacker")
   (assert (and (satisfies? c/HasID target) (satisfies? c/HasLevel target) (satisfies? c/HasHealth target)) "invalid target")
   (assert (or (nil? alliances) (and (some? alliances) (satisfies? c/HasAlliances alliances))) "invalid alliances")
@@ -30,7 +30,7 @@
 
   (->AttackAction source target damage alliances))
 
-(defn heal [source target hp & [alliances]]
+(defn heal [source target hp & {:keys [alliances item]}]
   (assert (satisfies? c/HasID source) "invalid healer")
   (assert (and (satisfies? c/HasID target) (satisfies? c/HasHealth target)) "invalid target")
   (assert (or (nil? alliances) (and (some? alliances) (satisfies? c/HasAlliances alliances))) "invalid alliances")

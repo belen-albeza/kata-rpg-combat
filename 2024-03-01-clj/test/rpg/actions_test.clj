@@ -52,7 +52,7 @@
     (let [c (any-attacker)
           other (any-target)
           alliances (stub HasAlliances {:allies? true})]
-          (is (thrown-with-msg? Exception #"cannot target allies" (attack c other 10 alliances)))))
+          (is (thrown-with-msg? Exception #"cannot target allies" (attack c other 10 {:alliances alliances})))))
 
   (testing "Attackers can target non-allies"
     (let [c (any-attacker)
@@ -78,7 +78,7 @@
     (let [c (any-healer)
           other (any-target {:health 900})
           alliances (stub HasAlliances {:allies? true})
-          action (heal c other 50 alliances)
+          action (heal c other 50 {:alliances alliances})
           [_ _ hp] (run action)]
       (is (received? other add-health [50]))
       (is (= hp 50))))
@@ -88,13 +88,13 @@
           other (any-target {:health 0})
           alliances (stub HasAlliances {:allies? true})]
 
-      (is (thrown-with-msg? Exception #"cannot target dead" (heal c other 50 alliances)))))
+      (is (thrown-with-msg? Exception #"cannot target dead" (heal c other 50 {:alliances alliances})))))
 
   (testing "A healer cannot heal non-allies"
     (let [c (any-healer)
           other (any-target)
           alliances (stub HasAlliances {:allies? false})]
-      (is (thrown-with-msg? Exception #"cannot target non-allies" (heal c other 50 alliances))))))
+      (is (thrown-with-msg? Exception #"cannot target non-allies" (heal c other 50 {:alliances alliances}))))))
 
 (deftest actions-use-potion
   (testing "A healer can use a magical potion to heal")

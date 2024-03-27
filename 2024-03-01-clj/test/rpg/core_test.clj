@@ -38,7 +38,7 @@
           fm (factions/add fm :alliance)
           fm (factions/join fm :horde orc)
           fm (factions/join fm :alliance elf)
-          attack (actions/attack orc elf 10 fm)
+          attack (actions/attack orc elf 10 {:alliances fm})
           [orc elf damage] (actions/run attack)]
       (is (= damage -10))
       (is (= (:health elf) 990))))
@@ -50,7 +50,7 @@
           fm (factions/add fm :horde)
           fm (factions/join fm :horde orc)
           fm (factions/join fm :horde troll)
-          healing (actions/heal orc troll 50 fm)
+          healing (actions/heal orc troll 50 {:alliances fm})
           [orc troll hp] (actions/run healing)]
       (is (= hp 50))
       (is (= (:health troll) 950)))))
