@@ -4,6 +4,14 @@ My take(s) at the RPG Combat kata
 
 ## Log
 
+### [2024-03-01](./2024-03-01-clj/README.md) (Clojure)
+
+Trying the Magical items variation of the kata.
+
+- First iteration with Clojure.
+- Test-Driven Development.
+- Focus on decoupling and learning Clojure features (Records, protocols, etc.)
+
 ### [2023-09-10](./2023-09-10-ts/README.md) (TypeScript)
 
 Trying out the Magical Objects variant of the kata with TypeScript.
