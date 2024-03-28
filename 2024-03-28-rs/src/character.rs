@@ -14,7 +14,13 @@ impl Character {
     }
 
     pub fn attack(&self, other: &mut Character) -> Result<(), String> {
-        other.health -= self.damage;
+        if !self.alive() {
+            return Err("dead characters cannot attack".to_string());
+        }
+
+        let new_health = other.health.saturating_sub(self.damage);
+        other.health = new_health;
+
         Ok(())
     }
 }
@@ -63,7 +69,7 @@ impl CharacterBuilder {
 mod tests {
     use super::*;
 
-    fn any_character(health: u64) -> Character {
+    fn any_target(health: u64) -> Character {
         CharacterBuilder::new().with_health(health).build()
     }
 
@@ -79,21 +85,45 @@ mod tests {
 
     #[test]
     pub fn returns_whether_they_are_alive() {
-        let dead_chara = any_character(0);
+        let dead_chara = any_target(0);
         assert_eq!(dead_chara.alive(), false);
 
-        let alive_chara = any_character(1);
+        let alive_chara = any_target(1);
         assert_eq!(alive_chara.alive(), true);
     }
 
     #[test]
     pub fn characters_deal_damage() {
         let attacker = any_attacker(100);
-        let mut target = any_character(1000);
+        let mut target = any_target(1000);
 
         let res = attacker.attack(&mut target);
 
         assert!(res.is_ok());
         assert_eq!(target.health, 900);
+    }
+
+    #[test]
+    pub fn health_does_not_get_below_zero() {
+        let attacker = any_attacker(100);
+        let mut target = any_target(1);
+
+        let res = attacker.attack(&mut target);
+
+        assert!(res.is_ok());
+        assert_eq!(target.health, 0);
+    }
+
+    #[test]
+    pub fn dead_characters_cannot_attack() {
+        let attacker = CharacterBuilder::new()
+            .with_health(0)
+            .with_damage(100)
+            .build();
+        let mut target = any_target(1000);
+
+        let res = attacker.attack(&mut target);
+
+        assert!(res.is_err());
     }
 }
