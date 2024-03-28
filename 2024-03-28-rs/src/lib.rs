@@ -9,5 +9,16 @@ pub fn run() {
         .with_health(800)
         .with_damage(100)
         .build();
-    println!("\tOrc: {:?}", orc);
+    let mut elf = CharacterBuilder::new()
+        .with_health(1000)
+        .with_damage(50)
+        .build();
+    println!("\tGarrosh: {:?}", orc);
+    println!("\tMalfurion: {:?}", elf);
+    println!("");
+
+    _ = orc.attack(&mut elf);
+    println!("> Garrosh attacks Malfurion");
+    println!("\tGarrosh: {:?}", orc);
+    println!("\tMalfurion: {:?}", elf);
 }

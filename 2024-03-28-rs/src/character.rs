@@ -12,6 +12,11 @@ impl Character {
     pub fn alive(&self) -> bool {
         self.health > 0
     }
+
+    pub fn attack(&self, other: &mut Character) -> Result<(), String> {
+        other.health -= self.damage;
+        Ok(())
+    }
 }
 
 impl Default for Character {
@@ -58,8 +63,12 @@ impl CharacterBuilder {
 mod tests {
     use super::*;
 
-    fn any_character_with_health(health: u64) -> Character {
+    fn any_character(health: u64) -> Character {
         CharacterBuilder::new().with_health(health).build()
+    }
+
+    fn any_attacker(damage: u64) -> Character {
+        CharacterBuilder::new().with_damage(damage).build()
     }
 
     #[test]
@@ -70,10 +79,21 @@ mod tests {
 
     #[test]
     pub fn returns_whether_they_are_alive() {
-        let dead_chara = any_character_with_health(0);
+        let dead_chara = any_character(0);
         assert_eq!(dead_chara.alive(), false);
 
-        let alive_chara = any_character_with_health(1);
+        let alive_chara = any_character(1);
         assert_eq!(alive_chara.alive(), true);
+    }
+
+    #[test]
+    pub fn characters_deal_damage() {
+        let attacker = any_attacker(100);
+        let mut target = any_character(1000);
+
+        let res = attacker.attack(&mut target);
+
+        assert!(res.is_ok());
+        assert_eq!(target.health, 900);
     }
 }
