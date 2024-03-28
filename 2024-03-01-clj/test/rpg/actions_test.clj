@@ -124,11 +124,23 @@
       (is (thrown-with-msg? Exception #"cannot target non-allies" (heal c other 50 {:alliances alliances}))))))
 
 (deftest actions-use-potion
-  (testing "A healer can use a magical potion to heal")
+  (testing "A healer can use a potion to heal")
     (let [chara (any-healer {:health 900})
           potion (any-potion {:hp 10 })
           action (heal-with-potion chara chara potion)
           [_ _ _ hp] (run action)]
       (is (received? chara add-health [10]))
       (is (received? potion add-health [-10]))
-      (is (= hp 10))))
+      (is (= hp 10)))
+
+  (testing "Potions get empty after being used"
+    (let [chara (any-healer)
+          potion (any-potion {:hp 10})
+          action (heal-with-potion chara chara potion)
+          _ (run action)]
+      (is (received? potion add-health [-10]))))
+
+  (testing "Healers must use non-destroyed potion"
+    (let [c (any-healer)
+          potion (any-potion {:hp 0})]
+      (is (thrown-with-msg? AssertionError #"cannot use destroyed" (heal-with-potion c c potion))))))

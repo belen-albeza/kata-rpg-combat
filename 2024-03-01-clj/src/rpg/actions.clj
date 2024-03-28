@@ -46,6 +46,16 @@
   (when (and (some? alliances) (c/allies? alliances source target)) (throw (Exception. "attackers cannot target allies")))
   (when-not (c/alive? source) (throw (Exception. "dead attackers cannot attack"))))
 
+(defn- verify-healing [source target alliances]
+  (assert (satisfies? c/HasID source) "invalid healer")
+  (assert (and (satisfies? c/HasID target) (satisfies? c/HasHealth target)) "invalid target")
+  (assert (or (nil? alliances) (and (some? alliances) (satisfies? c/HasAlliances alliances))) "invalid alliances")
+
+  (when-not (c/alive? source) (throw (Exception. "dead healers cannot heal")))
+  (when (and (some? alliances) (not (c/allies? alliances source target))) (throw (Exception. "healers cannot target non-allies")))
+  (when (and (nil? alliances) (not= (c/uid source) (c/uid target))) (throw (Exception. "healers cannot target non-allies")))
+  (when-not (c/alive? target) (throw (Exception. "healers cannot target dead allies"))))
+
 (defn attack [source target damage & {:keys [alliances]}]
   (verify-attack source target alliances)
   (->AttackAction source target damage))
@@ -58,16 +68,10 @@
   (->WeaponAttackAction source target weapon))
 
 (defn heal [source target hp & {:keys [alliances]}]
-  (assert (satisfies? c/HasID source) "invalid healer")
-  (assert (and (satisfies? c/HasID target) (satisfies? c/HasHealth target)) "invalid target")
-  (assert (or (nil? alliances) (and (some? alliances) (satisfies? c/HasAlliances alliances))) "invalid alliances")
-
-  (when-not (c/alive? source) (throw (Exception. "dead healers cannot heal")))
-  (when (and (some? alliances) (not (c/allies? alliances source target))) (throw (Exception. "healers cannot target non-allies")))
-  (when (and (nil? alliances) (not= (c/uid source) (c/uid target))) (throw (Exception. "healers cannot target non-allies")))
-  (when-not (c/alive? target) (throw (Exception. "healers cannot target dead allies")))
-
+  (verify-healing source target alliances)
   (->HealAction source target hp))
 
 (defn heal-with-potion [source target potion & {:keys [alliances]}]
+  (verify-healing source target alliances)
+  (assert (c/alive? potion) "cannot use destroyed potions")
   (->PotionHealAction source target potion))
