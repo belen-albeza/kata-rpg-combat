@@ -18,3 +18,5 @@ Cargo.lock
 
 /target
 
+# Local setup related
+.vscode
