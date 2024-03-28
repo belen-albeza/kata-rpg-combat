@@ -15,5 +15,8 @@
 (defprotocol HasAlliances
   (allies? [self entity other]))
 
-(defprotocol HasDamage
+(defprotocol DamageDealer
   (damage [self]))
+
+(defprotocol HpHealer
+  (hp [self]))

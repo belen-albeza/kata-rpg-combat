@@ -29,6 +29,14 @@
     (let [updated-target (c/add-health target hp)]
       [source updated-target hp])))
 
+(defrecord ^:private PotionHealAction [source target potion]
+  Action
+  (run [self]
+    (let [hp (c/hp potion)
+          updated-target (c/add-health target hp)
+          updated-potion (c/add-health potion (* -1 hp))]
+      [source updated-target updated-potion hp])))
+
 (defn- verify-attack [source target alliances]
   (assert (and (satisfies? c/HasID source) (satisfies? c/HasLevel source) (satisfies? c/HasHealth source)) "invalid attacker")
   (assert (and (satisfies? c/HasID target) (satisfies? c/HasLevel target) (satisfies? c/HasHealth target)) "invalid target")
@@ -44,12 +52,12 @@
 
 (defn attack-with-weapon [source target weapon & {:keys [alliances]}]
   (verify-attack source target alliances)
-  (assert (and (satisfies? c/HasHealth weapon) (satisfies? c/HasDamage weapon)) "invalid weapon")
+  (assert (and (satisfies? c/HasHealth weapon) (satisfies? c/DamageDealer weapon)) "invalid weapon")
   (when-not (c/alive? weapon) (throw (Exception. "cannot use destroyed weapons")))
 
   (->WeaponAttackAction source target weapon))
 
-(defn heal [source target hp & {:keys [alliances item]}]
+(defn heal [source target hp & {:keys [alliances]}]
   (assert (satisfies? c/HasID source) "invalid healer")
   (assert (and (satisfies? c/HasID target) (satisfies? c/HasHealth target)) "invalid target")
   (assert (or (nil? alliances) (and (some? alliances) (satisfies? c/HasAlliances alliances))) "invalid alliances")
@@ -60,3 +68,6 @@
   (when-not (c/alive? target) (throw (Exception. "healers cannot target dead allies")))
 
   (->HealAction source target hp))
+
+(defn heal-with-potion [source target potion & {:keys [alliances]}]
+  (->PotionHealAction source target potion))

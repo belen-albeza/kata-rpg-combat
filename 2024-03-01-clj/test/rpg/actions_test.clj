@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [shrubbery.core :refer :all]
             [rpg.actions :refer :all]
-            [rpg.common :refer [HasHealth HasID HasLevel add-health HasAlliances HasDamage]]))
+            [rpg.common :refer [HasHealth HasID HasLevel add-health HasAlliances DamageDealer HpHealer]]))
 
 (defn- any-attacker [& {:keys [level id health] :or {level 1 id :attacker health 1000}}]
   (stub HasLevel {:level level} HasID {:uid id} HasHealth {:alive? (> health 0)}))
@@ -14,10 +14,10 @@
   (mock HasID {:uid id} HasHealth {:alive? true}))
 
 (defn- any-potion [& {:keys [hp] :or {hp 100}}]
-  (mock HasHealth))
+  (mock HasHealth {:alive? (> hp 0)} HpHealer {:hp hp}))
 
 (defn any-weapon [& {:keys [health damage] :or {health 10 damage 1}}]
-  (mock HasHealth {:alive? (> health 0)} HasDamage {:damage damage}))
+  (mock HasHealth {:alive? (> health 0)} DamageDealer {:damage damage}))
 
 (deftest actions-attack
   (testing "An attacker can deal damage to a target"
@@ -125,5 +125,10 @@
 
 (deftest actions-use-potion
   (testing "A healer can use a magical potion to heal")
-    (let [c (any-healer)
-          p ()]))
+    (let [chara (any-healer {:health 900})
+          potion (any-potion {:hp 10 })
+          action (heal-with-potion chara chara potion)
+          [_ _ _ hp] (run action)]
+      (is (received? chara add-health [10]))
+      (is (received? potion add-health [-10]))
+      (is (= hp 10))))

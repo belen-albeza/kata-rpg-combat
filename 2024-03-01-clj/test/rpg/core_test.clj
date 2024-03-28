@@ -6,7 +6,7 @@
             [rpg.magical-items :as items]
             [rpg.core :refer :all]))
 
-(deftest actions-test
+(deftest basic-actions-test
   (testing "A character deals damage to another one by attacking"
     (let [orc (chara/character :garrosh)
           elf (chara/character :malfurion {:health 1000})
@@ -20,17 +20,7 @@
           healing (actions/heal orc orc 10)
           [_ orc hp] (actions/run healing)]
       (is (= (:health orc) 960))
-      (is (= hp 10)))
-
-  (testing "A character can attack another with a magical weapon"
-    (let [orc (chara/character :garrosh)
-          elf (chara/character :malfurion {:health 1000})
-          axe (items/weapon 10 100)
-          attack (actions/attack-with-weapon orc elf axe)
-          [_ elf axe damage] (actions/run attack)]
-      (is (= (:health elf) 900))
-      (is (= damage -100))
-      (is (= (:health axe) 9)))))
+      (is (= hp 10))))
 
 (deftest factions-test
   (testing "A character can join a faction"
@@ -75,4 +65,24 @@
     (let [fm (factions/faction-manager)
           fm (factions/add fm :horde)
           potion (items/potion 50)]
-      (is (thrown-with-msg? AssertionError #"invalid member" (factions/join fm :horde potion))))))
+      (is (thrown-with-msg? AssertionError #"invalid member" (factions/join fm :horde potion)))))
+
+  (testing "A character can attack another with a magical weapon"
+    (let [orc (chara/character :garrosh)
+          elf (chara/character :malfurion {:health 1000})
+          axe (items/weapon 10 100)
+          attack (actions/attack-with-weapon orc elf axe)
+          [_ elf axe damage] (actions/run attack)]
+      (is (= (:health elf) 900))
+      (is (= damage -100))
+      (is (= (:health axe) 9))))
+
+  (testing "A character can heal with a potion"
+    (let [orc (chara/character :garrosh {:health 900})
+          red-potion (items/potion 10)
+          healing (actions/heal-with-potion orc orc red-potion)
+          [_ orc red-potion hp] (actions/run healing)]
+
+      (is (= (:health orc) 910))
+      (is (= (:health red-potion) 0))
+      (is (= hp 10)))))
