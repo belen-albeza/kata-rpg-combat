@@ -1,7 +1,12 @@
+use std::cmp::min;
+
+const MAX_HEALTH: u64 = 1000;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Character {
     health: u64,
     damage: u64,
+    healing: u64,
 }
 
 impl Character {
@@ -23,6 +28,15 @@ impl Character {
 
         Ok(())
     }
+
+    pub fn heal(&mut self) -> Result<(), String> {
+        if !self.alive() {
+            return Err("dead characters cannot heal".to_string());
+        }
+
+        self.health = min(self.health + self.healing, MAX_HEALTH);
+        Ok(())
+    }
 }
 
 impl Default for Character {
@@ -30,6 +44,7 @@ impl Default for Character {
         Self {
             health: 1000,
             damage: 100,
+            healing: 100,
         }
     }
 }
@@ -37,6 +52,7 @@ impl Default for Character {
 pub struct CharacterBuilder {
     health: u64,
     damage: u64,
+    healing: u64,
 }
 
 impl CharacterBuilder {
@@ -44,6 +60,7 @@ impl CharacterBuilder {
         Self {
             health: 1000,
             damage: 1,
+            healing: 1,
         }
     }
 
@@ -57,10 +74,16 @@ impl CharacterBuilder {
         self
     }
 
+    pub fn with_healing(&mut self, healing: u64) -> &mut Self {
+        self.healing = healing;
+        self
+    }
+
     pub fn build(&self) -> Character {
         let mut c = Character::new();
         c.health = self.health;
         c.damage = self.damage;
+        c.healing = self.healing;
         c
     }
 }
@@ -125,5 +148,40 @@ mod tests {
         let res = attacker.attack(&mut target);
 
         assert!(res.is_err());
+    }
+
+    #[test]
+    pub fn characters_heal_hp() {
+        let mut healer = CharacterBuilder::new()
+            .with_health(900)
+            .with_healing(50)
+            .build();
+        let res = healer.heal();
+
+        assert!(res.is_ok());
+        assert_eq!(healer.health, 950);
+    }
+
+    #[test]
+    pub fn dead_characters_cannot_heal() {
+        let mut healer = CharacterBuilder::new()
+            .with_health(0)
+            .with_healing(50)
+            .build();
+        let res = healer.heal();
+
+        assert!(res.is_err());
+    }
+
+    #[test]
+    pub fn health_does_not_go_above_zero() {
+        let mut healer = CharacterBuilder::new()
+            .with_health(900)
+            .with_healing(200)
+            .build();
+        let res = healer.heal();
+
+        assert!(res.is_ok());
+        assert_eq!(healer.health, 1000);
     }
 }
