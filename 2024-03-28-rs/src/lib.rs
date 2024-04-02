@@ -8,6 +8,7 @@ pub fn run() {
     let orc = CharacterBuilder::new()
         .with_health(800)
         .with_damage(100)
+        .with_level(6)
         .build();
     let mut elf = CharacterBuilder::new()
         .with_health(1000)
