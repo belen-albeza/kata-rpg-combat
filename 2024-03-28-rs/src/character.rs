@@ -1,4 +1,4 @@
-use std::cmp::min;
+use std::cmp::{max, min};
 
 const MAX_HEALTH: u64 = 1000;
 
@@ -7,10 +7,11 @@ pub struct Character {
     health: u64,
     damage: u64,
     healing: u64,
+    level: u64,
 }
 
 impl Character {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self::default()
     }
 
@@ -42,9 +43,10 @@ impl Character {
 impl Default for Character {
     fn default() -> Self {
         Self {
+            level: 1,
             health: 1000,
-            damage: 100,
-            healing: 100,
+            damage: 1,
+            healing: 1,
         }
     }
 }
@@ -53,6 +55,7 @@ pub struct CharacterBuilder {
     health: u64,
     damage: u64,
     healing: u64,
+    level: u64,
 }
 
 impl CharacterBuilder {
@@ -61,6 +64,7 @@ impl CharacterBuilder {
             health: 1000,
             damage: 1,
             healing: 1,
+            level: 1,
         }
     }
 
@@ -79,11 +83,17 @@ impl CharacterBuilder {
         self
     }
 
+    pub fn with_level(&mut self, level: u64) -> &mut Self {
+        self.level = max(1, level);
+        self
+    }
+
     pub fn build(&self) -> Character {
         let mut c = Character::new();
         c.health = self.health;
         c.damage = self.damage;
         c.healing = self.healing;
+        c.level = self.level;
         c
     }
 }
@@ -104,6 +114,7 @@ mod tests {
     pub fn creates_character_with_default_values() {
         let c = Character::default();
         assert_eq!(c.health, 1000);
+        assert_eq!(c.level, 1);
     }
 
     #[test]
