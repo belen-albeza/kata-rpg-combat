@@ -25,7 +25,15 @@ impl Character {
             return Err("dead characters cannot attack".to_string());
         }
 
-        let new_health = other.health.saturating_sub(self.damage);
+        let level_diff = self.level as i64 - other.level as i64;
+        let damage_modifier = match level_diff {
+            5.. => 1.5,
+            ..=-5 => 0.5,
+            _ => 1.0,
+        };
+        let damage = f64::max(0.0, self.damage as f64 * damage_modifier) as u64;
+
+        let new_health = other.health.saturating_sub(damage);
         other.health = new_health;
 
         Ok(())
@@ -258,5 +266,39 @@ mod tests {
 
         assert!(res.is_ok());
         assert_eq!(healer.health, 1500);
+    }
+
+    #[test]
+    pub fn attackers_get_a_buff_when_targeting_lower_level_characters() {
+        let attacker = CharacterBuilder::new()
+            .with_level(6)
+            .with_damage(100)
+            .build();
+        let mut target = CharacterBuilder::new()
+            .with_level(1)
+            .with_health(1000)
+            .build();
+
+        let res = attacker.attack(&mut target);
+
+        assert!(res.is_ok());
+        assert_eq!(target.health, 850);
+    }
+
+    #[test]
+    pub fn attackers_get_a_debuff_when_targeting_higher_level_characters() {
+        let attacker = CharacterBuilder::new()
+            .with_level(1)
+            .with_damage(100)
+            .build();
+        let mut target = CharacterBuilder::new()
+            .with_level(6)
+            .with_health(1000)
+            .build();
+
+        let res = attacker.attack(&mut target);
+
+        assert!(res.is_ok());
+        assert_eq!(target.health, 950);
     }
 }
