@@ -1,6 +1,7 @@
 use crate::character::CharacterBuilder;
 
 mod character;
+mod traits;
 
 pub fn run() {
     println!("RPG Combat");

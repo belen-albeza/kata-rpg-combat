@@ -1,3 +1,4 @@
+use crate::traits::{HasHealth, HasLevel};
 use std::cmp::{max, min};
 
 const MAX_HEALTH_LO_LEVEL: u64 = 1000;
@@ -16,16 +17,12 @@ impl Character {
         Self::default()
     }
 
-    pub fn alive(&self) -> bool {
-        self.health > 0
-    }
-
-    pub fn attack(&self, other: &mut Character) -> Result<(), String> {
+    pub fn attack(&self, other: &mut (impl HasHealth + HasLevel)) -> Result<(), String> {
         if !self.alive() {
             return Err("dead characters cannot attack".to_string());
         }
 
-        let level_diff = self.level as i64 - other.level as i64;
+        let level_diff = self.level as i64 - other.level() as i64;
         let damage_modifier = match level_diff {
             5.. => 1.5,
             ..=-5 => 0.5,
@@ -33,8 +30,7 @@ impl Character {
         };
         let damage = f64::max(0.0, self.damage as f64 * damage_modifier) as u64;
 
-        let new_health = other.health.saturating_sub(damage);
-        other.health = new_health;
+        other.add_health(-(damage as i64));
 
         Ok(())
     }
@@ -47,14 +43,6 @@ impl Character {
         self.health = min(self.health + self.healing, self.max_health());
         Ok(())
     }
-
-    fn max_health(&self) -> u64 {
-        if self.level >= 6 {
-            MAX_HEALTH_HI_LEVEL
-        } else {
-            MAX_HEALTH_LO_LEVEL
-        }
-    }
 }
 
 impl Default for Character {
@@ -64,6 +52,38 @@ impl Default for Character {
             health: 1000,
             damage: 1,
             healing: 1,
+        }
+    }
+}
+
+impl HasLevel for Character {
+    fn level(&self) -> u64 {
+        self.level
+    }
+}
+
+impl HasHealth for Character {
+    fn health(&self) -> u64 {
+        self.health
+    }
+
+    fn add_health(&mut self, delta: i64) -> i64 {
+        let old_health = self.health() as i64;
+        let new_health = min(
+            max(0, self.health() as i64 + delta),
+            self.max_health() as i64,
+        );
+
+        self.health = new_health as u64;
+
+        new_health - old_health
+    }
+
+    fn max_health(&self) -> u64 {
+        if self.level >= 6 {
+            MAX_HEALTH_HI_LEVEL
+        } else {
+            MAX_HEALTH_LO_LEVEL
         }
     }
 }
