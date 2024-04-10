@@ -1,7 +1,11 @@
+pub mod actions;
+pub mod character;
+pub mod traits;
+
 use crate::character::CharacterBuilder;
 
-mod character;
-mod traits;
+impl actions::Attacker for character::Character {}
+impl actions::AttackTarget for character::Character {}
 
 pub fn run() {
     println!("RPG Combat");
@@ -19,7 +23,8 @@ pub fn run() {
     println!("\tGarrosh: {:?}", orc);
     println!("\tMalfurion: {:?}", elf);
 
-    _ = orc.attack(&mut elf);
+    let mut attack = actions::Attack::new();
+    _ = attack.run(&orc, &mut elf);
     println!("");
     println!("> Garrosh attacks Malfurion");
     println!("\tGarrosh: {:?}", orc);

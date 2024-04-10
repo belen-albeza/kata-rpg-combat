@@ -13,3 +13,7 @@ pub trait HasHealth {
 pub trait HasLevel {
     fn level(&self) -> u64;
 }
+
+pub trait DamageDealer {
+    fn damage(&self) -> u64;
+}

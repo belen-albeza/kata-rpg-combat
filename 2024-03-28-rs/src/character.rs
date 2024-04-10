@@ -1,4 +1,4 @@
-use crate::traits::{HasHealth, HasLevel};
+use crate::traits::{DamageDealer, HasHealth, HasLevel};
 use std::cmp::{max, min};
 
 const MAX_HEALTH_LO_LEVEL: u64 = 1000;
@@ -85,6 +85,12 @@ impl HasHealth for Character {
         } else {
             MAX_HEALTH_LO_LEVEL
         }
+    }
+}
+
+impl DamageDealer for Character {
+    fn damage(&self) -> u64 {
+        self.damage
     }
 }
 
