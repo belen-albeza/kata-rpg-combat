@@ -17,24 +17,6 @@ impl Character {
         Self::default()
     }
 
-    pub fn attack(&self, other: &mut (impl HasHealth + HasLevel)) -> Result<(), String> {
-        if !self.alive() {
-            return Err("dead characters cannot attack".to_string());
-        }
-
-        let level_diff = self.level as i64 - other.level() as i64;
-        let damage_modifier = match level_diff {
-            5.. => 1.5,
-            ..=-5 => 0.5,
-            _ => 1.0,
-        };
-        let damage = f64::max(0.0, self.damage as f64 * damage_modifier) as u64;
-
-        other.add_health(-(damage as i64));
-
-        Ok(())
-    }
-
     pub fn heal(&mut self) -> Result<(), String> {
         if !self.alive() {
             return Err("dead characters cannot heal".to_string());
@@ -160,10 +142,6 @@ mod tests {
         CharacterBuilder::new().with_health(health).build()
     }
 
-    fn any_attacker(damage: u64) -> Character {
-        CharacterBuilder::new().with_damage(damage).build()
-    }
-
     #[test]
     pub fn creates_character_with_default_values() {
         let c = Character::default();
@@ -209,13 +187,10 @@ mod tests {
 
     #[test]
     pub fn health_does_not_get_below_zero() {
-        let attacker = any_attacker(100);
-        let mut target = any_target(1);
+        let mut chara = any_target(1000);
 
-        let res = attacker.attack(&mut target);
-
-        assert!(res.is_ok());
-        assert_eq!(target.health, 0);
+        chara.add_health(-2000);
+        assert_eq!(chara.health, 0);
     }
 
     #[test]
