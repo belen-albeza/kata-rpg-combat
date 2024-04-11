@@ -1,4 +1,6 @@
-use super::{AttackSource, AttackTarget, DamageDealer, HasHealth, HasLevel};
+use super::{
+    AttackTarget, Attacker, DamageDealer, HasHealing, HasHealth, HasLevel, HealTarget, Healer,
+};
 
 use mockall::predicate::*;
 use mockall::*;
@@ -18,15 +20,21 @@ mock! {
     impl HasLevel for Entity {
         fn level(&self) -> u64;
     }
+    impl HasHealing for Entity {
+        fn healing(&self) -> u64;
+    }
 
-    impl AttackSource for Entity {}
+    impl Attacker for Entity {}
     impl AttackTarget for Entity {}
+    impl Healer for Entity {}
+    impl HealTarget for Entity {}
 }
 
 pub struct EntityBuilder {
     level: u64,
     health: u64,
     damage: u64,
+    healing: u64,
 }
 
 impl EntityBuilder {
@@ -34,7 +42,8 @@ impl EntityBuilder {
         Self {
             level: 1,
             health: 1000,
-            damage: 1,
+            damage: 0,
+            healing: 0,
         }
     }
 
@@ -44,6 +53,7 @@ impl EntityBuilder {
         mock.expect_health().return_const(self.health);
         mock.expect_alive().return_const(self.health > 0);
         mock.expect_damage().return_const(self.damage);
+        mock.expect_healing().return_const(self.healing);
 
         mock
     }
@@ -60,6 +70,11 @@ impl EntityBuilder {
 
     pub fn with_damage(&mut self, damage: u64) -> &mut Self {
         self.damage = damage;
+        self
+    }
+
+    pub fn with_healing(&mut self, healing: u64) -> &mut Self {
+        self.healing = healing;
         self
     }
 }

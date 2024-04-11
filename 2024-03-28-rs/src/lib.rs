@@ -4,8 +4,10 @@ pub mod traits;
 
 use crate::character::CharacterBuilder;
 
-impl actions::AttackSource for character::Character {}
+impl actions::Attacker for character::Character {}
 impl actions::AttackTarget for character::Character {}
+impl actions::Healer for character::Character {}
+impl actions::HealTarget for character::Character {}
 
 pub fn run() {
     println!("RPG Combat");
@@ -23,14 +25,13 @@ pub fn run() {
     println!("\tGarrosh: {:?}", orc);
     println!("\tMalfurion: {:?}", elf);
 
-    let mut attack = actions::attack::Attack::new();
-    _ = attack.run(&orc, &mut elf);
+    _ = actions::Attack::new().run(&orc, &mut elf);
     println!("");
     println!("> Garrosh attacks Malfurion");
     println!("\tGarrosh: {:?}", orc);
     println!("\tMalfurion: {:?}", elf);
 
-    _ = elf.heal();
+    _ = actions::HealSelf::new().run(&mut elf);
     println!("");
     println!("> Malfurion heals himself");
     println!("\tGarrosh: {:?}", orc);

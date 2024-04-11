@@ -1,4 +1,4 @@
-use crate::traits::{DamageDealer, HasHealth, HasLevel};
+use crate::traits::{DamageDealer, HasHealing, HasHealth, HasLevel};
 use std::cmp::{max, min};
 
 const MAX_HEALTH_LO_LEVEL: u64 = 1000;
@@ -15,15 +15,6 @@ pub struct Character {
 impl Character {
     fn new() -> Self {
         Self::default()
-    }
-
-    pub fn heal(&mut self) -> Result<(), String> {
-        if !self.alive() {
-            return Err("dead characters cannot heal".to_string());
-        }
-
-        self.health = min(self.health + self.healing, self.max_health());
-        Ok(())
     }
 }
 
@@ -76,6 +67,12 @@ impl DamageDealer for Character {
     }
 }
 
+impl HasHealing for Character {
+    fn healing(&self) -> u64 {
+        self.healing
+    }
+}
+
 pub struct CharacterBuilder {
     health: Option<u64>,
     damage: u64,
@@ -87,8 +84,8 @@ impl CharacterBuilder {
     pub fn new() -> Self {
         Self {
             health: None,
-            damage: 1,
-            healing: 1,
+            damage: 0,
+            healing: 0,
             level: 1,
         }
     }
@@ -190,58 +187,28 @@ mod tests {
         let mut chara = any_target(1000);
 
         chara.add_health(-2000);
+
         assert_eq!(chara.health, 0);
     }
 
     #[test]
-    pub fn characters_heal_hp() {
-        let mut healer = CharacterBuilder::new()
-            .with_health(900)
-            .with_healing(50)
-            .build();
-
-        let res = healer.heal();
-
-        assert!(res.is_ok());
-        assert_eq!(healer.health, 950);
-    }
-
-    #[test]
-    pub fn dead_characters_cannot_heal() {
-        let mut healer = CharacterBuilder::new()
-            .with_health(0)
-            .with_healing(50)
-            .build();
-
-        let res = healer.heal();
-
-        assert!(res.is_err());
-    }
-
-    #[test]
     pub fn health_does_not_go_above_1000() {
-        let mut healer = CharacterBuilder::new()
-            .with_health(900)
-            .with_healing(200)
-            .build();
+        let mut chara = CharacterBuilder::new().with_health(900).build();
 
-        let res = healer.heal();
+        chara.add_health(200);
 
-        assert!(res.is_ok());
-        assert_eq!(healer.health, 1000);
+        assert_eq!(chara.health, 1000);
     }
 
     #[test]
     pub fn health_cap_raises_to_1500_for_level_6_and_beyond() {
-        let mut healer = CharacterBuilder::new()
+        let mut chara = CharacterBuilder::new()
             .with_health(1400)
-            .with_healing(200)
             .with_level(6)
             .build();
 
-        let res = healer.heal();
+        chara.add_health(200);
 
-        assert!(res.is_ok());
-        assert_eq!(healer.health, 1500);
+        assert_eq!(chara.health, 1500);
     }
 }

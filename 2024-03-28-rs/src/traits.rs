@@ -22,3 +22,8 @@ pub trait HasLevel {
 pub trait DamageDealer {
     fn damage(&self) -> u64;
 }
+
+#[automock]
+pub trait HasHealing {
+    fn healing(&self) -> u64;
+}

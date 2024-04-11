@@ -2,11 +2,15 @@
 pub mod helpers;
 
 pub mod attack;
+pub mod heal_self;
+
+pub use attack::Attack;
+pub use heal_self::HealSelf;
 
 use std::error::Error;
 use std::fmt;
 
-use crate::traits::{DamageDealer, HasHealth, HasLevel};
+use crate::traits::{DamageDealer, HasHealing, HasHealth, HasLevel};
 
 #[derive(Debug, PartialEq)]
 pub enum ActionError {
@@ -27,5 +31,8 @@ impl Error for ActionError {}
 
 pub type Result<T> = std::result::Result<T, ActionError>;
 
-pub trait AttackSource: DamageDealer + HasHealth + HasLevel {}
+pub trait Attacker: DamageDealer + HasHealth + HasLevel {}
 pub trait AttackTarget: HasHealth + HasLevel {}
+
+pub trait Healer: HasHealing + HasHealth {}
+pub trait HealTarget: HasHealth {}

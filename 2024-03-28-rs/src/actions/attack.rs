@@ -1,4 +1,4 @@
-use super::{ActionError, AttackSource, AttackTarget, Result};
+use super::{ActionError, AttackTarget, Attacker, Result};
 
 pub struct Attack {}
 
@@ -7,11 +7,7 @@ impl Attack {
         Self {}
     }
 
-    pub fn run(
-        &mut self,
-        source: &impl AttackSource,
-        target: &mut impl AttackTarget,
-    ) -> Result<()> {
+    pub fn run(&self, source: &impl Attacker, target: &mut impl AttackTarget) -> Result<()> {
         if !source.alive() {
             return Err(ActionError::InvalidSource(
                 "dead characters cannot attack".to_owned(),
