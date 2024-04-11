@@ -1,3 +1,6 @@
+use mockall::*;
+
+#[automock]
 pub trait HasHealth {
     fn health(&self) -> u64;
 
@@ -10,10 +13,12 @@ pub trait HasHealth {
     fn add_health(&mut self, delta: i64) -> i64;
 }
 
+#[automock]
 pub trait HasLevel {
     fn level(&self) -> u64;
 }
 
+#[automock]
 pub trait DamageDealer {
     fn damage(&self) -> u64;
 }

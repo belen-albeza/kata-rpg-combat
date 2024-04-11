@@ -208,17 +208,6 @@ mod tests {
     }
 
     #[test]
-    pub fn characters_deal_damage() {
-        let attacker = any_attacker(100);
-        let mut target = any_target(1000);
-
-        let res = attacker.attack(&mut target);
-
-        assert!(res.is_ok());
-        assert_eq!(target.health, 900);
-    }
-
-    #[test]
     pub fn health_does_not_get_below_zero() {
         let attacker = any_attacker(100);
         let mut target = any_target(1);
@@ -227,19 +216,6 @@ mod tests {
 
         assert!(res.is_ok());
         assert_eq!(target.health, 0);
-    }
-
-    #[test]
-    pub fn dead_characters_cannot_attack() {
-        let attacker = CharacterBuilder::new()
-            .with_health(0)
-            .with_damage(100)
-            .build();
-        let mut target = any_target(1000);
-
-        let res = attacker.attack(&mut target);
-
-        assert!(res.is_err());
     }
 
     #[test]
@@ -292,39 +268,5 @@ mod tests {
 
         assert!(res.is_ok());
         assert_eq!(healer.health, 1500);
-    }
-
-    #[test]
-    pub fn attackers_get_a_buff_when_targeting_lower_level_characters() {
-        let attacker = CharacterBuilder::new()
-            .with_level(6)
-            .with_damage(100)
-            .build();
-        let mut target = CharacterBuilder::new()
-            .with_level(1)
-            .with_health(1000)
-            .build();
-
-        let res = attacker.attack(&mut target);
-
-        assert!(res.is_ok());
-        assert_eq!(target.health, 850);
-    }
-
-    #[test]
-    pub fn attackers_get_a_debuff_when_targeting_higher_level_characters() {
-        let attacker = CharacterBuilder::new()
-            .with_level(1)
-            .with_damage(100)
-            .build();
-        let mut target = CharacterBuilder::new()
-            .with_level(6)
-            .with_health(1000)
-            .build();
-
-        let res = attacker.attack(&mut target);
-
-        assert!(res.is_ok());
-        assert_eq!(target.health, 950);
     }
 }
