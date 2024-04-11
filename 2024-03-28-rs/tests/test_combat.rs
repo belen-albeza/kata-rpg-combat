@@ -1,4 +1,4 @@
-use rpg::actions::Attack;
+use rpg::actions::attack::Attack;
 use rpg::character::CharacterBuilder;
 use rpg::traits::HasHealth;
 

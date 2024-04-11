@@ -4,7 +4,7 @@ pub mod traits;
 
 use crate::character::CharacterBuilder;
 
-impl actions::Attacker for character::Character {}
+impl actions::AttackSource for character::Character {}
 impl actions::AttackTarget for character::Character {}
 
 pub fn run() {
@@ -23,7 +23,7 @@ pub fn run() {
     println!("\tGarrosh: {:?}", orc);
     println!("\tMalfurion: {:?}", elf);
 
-    let mut attack = actions::Attack::new();
+    let mut attack = actions::attack::Attack::new();
     _ = attack.run(&orc, &mut elf);
     println!("");
     println!("> Garrosh attacks Malfurion");
