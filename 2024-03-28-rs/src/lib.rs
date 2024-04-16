@@ -4,6 +4,7 @@ pub mod factions;
 pub mod traits;
 
 use crate::character::CharacterBuilder;
+use crate::factions::FactionManager;
 
 impl actions::Attacker for character::Character {}
 impl actions::AttackTarget for character::Character {}
@@ -26,7 +27,7 @@ pub fn run() {
     println!("\tGarrosh: {:?}", orc);
     println!("\tMalfurion: {:?}", elf);
 
-    _ = actions::Attack::new().run(&orc, &mut elf);
+    _ = actions::Attack::new().run(&orc, &mut elf, None::<&FactionManager>);
     println!("");
     println!("> Garrosh attacks Malfurion");
     println!("\tGarrosh: {:?}", orc);

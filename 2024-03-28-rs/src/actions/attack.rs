@@ -1,3 +1,5 @@
+use crate::traits::AllianceInformer;
+
 use super::{ActionError, AttackTarget, Attacker, Result};
 
 pub struct Attack {}
@@ -7,11 +9,24 @@ impl Attack {
         Self {}
     }
 
-    pub fn run(&self, source: &impl Attacker, target: &mut impl AttackTarget) -> Result<()> {
+    pub fn run(
+        &self,
+        source: &impl Attacker,
+        target: &mut impl AttackTarget,
+        alliances: Option<&impl AllianceInformer>,
+    ) -> Result<()> {
         if !source.alive() {
             return Err(ActionError::InvalidSource(
                 "dead characters cannot attack".to_owned(),
             ));
+        }
+
+        if let Some(alliances) = alliances {
+            if alliances.allies(source, target) {
+                return Err(ActionError::InvalidTarget(
+                    "cannot attack allies".to_owned(),
+                ));
+            }
         }
 
         let level_diff = source.level() as i64 - target.level() as i64;
@@ -30,6 +45,8 @@ impl Attack {
 
 #[cfg(test)]
 mod tests {
+    use crate::traits::MockAllianceInformer;
+
     use super::super::helpers::EntityBuilder;
     use super::*;
     use mockall::predicate::*;
@@ -44,7 +61,7 @@ mod tests {
             .times(1)
             .return_const(-100);
 
-        let res = Attack::new().run(&source, &mut target);
+        let res = Attack::new().run(&source, &mut target, None::<&MockAllianceInformer>);
 
         assert!(res.is_ok());
     }
@@ -54,7 +71,7 @@ mod tests {
         let source = EntityBuilder::new().with_health(0).build();
         let mut target = EntityBuilder::new().build();
 
-        let res = Attack::new().run(&source, &mut target);
+        let res = Attack::new().run(&source, &mut target, None::<&MockAllianceInformer>);
 
         assert!(res.is_err());
     }
@@ -69,7 +86,7 @@ mod tests {
             .times(1)
             .return_const(-150);
 
-        let res = Attack::new().run(&source, &mut target);
+        let res = Attack::new().run(&source, &mut target, None::<&MockAllianceInformer>);
 
         assert!(res.is_ok());
     }
@@ -84,7 +101,7 @@ mod tests {
             .times(1)
             .return_const(-50);
 
-        let res = Attack::new().run(&source, &mut target);
+        let res = Attack::new().run(&source, &mut target, None::<&MockAllianceInformer>);
 
         assert!(res.is_ok());
     }

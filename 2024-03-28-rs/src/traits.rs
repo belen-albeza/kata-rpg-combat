@@ -32,3 +32,8 @@ pub trait HasHealing {
 pub trait HasID {
     fn id(&self) -> String;
 }
+
+#[automock]
+pub trait AllianceInformer {
+    fn allies(&self, a: &dyn HasID, b: &dyn HasID) -> bool;
+}

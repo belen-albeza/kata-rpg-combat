@@ -3,7 +3,7 @@ use std::fmt;
 
 use std::error::Error;
 
-use crate::traits::HasID;
+use crate::traits::{AllianceInformer, HasID};
 
 #[derive(Debug, PartialEq)]
 pub enum FactionError {
@@ -89,6 +89,15 @@ impl FactionManager {
     }
 }
 
+impl AllianceInformer for FactionManager {
+    fn allies(&self, member: &dyn HasID, other: &dyn HasID) -> bool {
+        self.factions
+            .iter()
+            .find(|(_, faction)| faction.contains(&member.id()) && faction.contains(&other.id()))
+            .is_some()
+    }
+}
+
 type Faction = HashSet<String>;
 
 #[cfg(test)]
@@ -158,8 +167,17 @@ mod tests {
     }
 
     #[test]
-    fn factions_are_created_with_no_members() {
-        let f = Faction::new();
-        assert_eq!(f.len(), 0);
+    fn allies_returns_true_when_two_members_share_a_faction() {
+        let mut member = MockMember::new();
+        member.expect_id().return_const("garrosh");
+        let mut other = MockMember::new();
+        other.expect_id().return_const("thrall");
+        let mut fm = FactionManager::new();
+        _ = fm.add_faction("horde");
+
+        _ = fm.join_faction("horde", &member);
+        _ = fm.join_faction("horde", &other);
+
+        assert_eq!(fm.allies(&member, &other), true);
     }
 }

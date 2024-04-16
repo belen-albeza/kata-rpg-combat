@@ -1,5 +1,6 @@
 use super::{
-    AttackTarget, Attacker, DamageDealer, HasHealing, HasHealth, HasLevel, HealTarget, Healer,
+    AttackTarget, Attacker, DamageDealer, HasHealing, HasHealth, HasID, HasLevel, HealTarget,
+    Healer,
 };
 
 use mockall::predicate::*;
@@ -22,6 +23,9 @@ mock! {
     }
     impl HasHealing for Entity {
         fn healing(&self) -> u64;
+    }
+    impl HasID for Entity {
+        fn id(&self) -> String;
     }
 
     impl Attacker for Entity {}

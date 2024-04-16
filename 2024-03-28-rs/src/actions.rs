@@ -10,7 +10,8 @@ pub use heal_self::HealSelf;
 use std::error::Error;
 use std::fmt;
 
-use crate::traits::{DamageDealer, HasHealing, HasHealth, HasLevel};
+pub use crate::traits::AllianceInformer;
+use crate::traits::{DamageDealer, HasHealing, HasHealth, HasID, HasLevel};
 
 #[derive(Debug, PartialEq)]
 pub enum ActionError {
@@ -31,8 +32,8 @@ impl Error for ActionError {}
 
 pub type Result<T> = std::result::Result<T, ActionError>;
 
-pub trait Attacker: DamageDealer + HasHealth + HasLevel {}
-pub trait AttackTarget: HasHealth + HasLevel {}
+pub trait Attacker: DamageDealer + HasHealth + HasLevel + HasID {}
+pub trait AttackTarget: HasHealth + HasLevel + HasID {}
 
 pub trait Healer: HasHealing + HasHealth {}
 pub trait HealTarget: HasHealth {}
