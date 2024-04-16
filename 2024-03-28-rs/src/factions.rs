@@ -9,6 +9,7 @@ use crate::traits::HasID;
 pub enum FactionError {
     FactionDoesNotExist(String),
     DuplicateFaction(String),
+    MemberDoesNotExist(String, String),
     DuplicateMember(String, String),
 }
 
@@ -17,6 +18,11 @@ impl fmt::Display for FactionError {
         match self {
             Self::FactionDoesNotExist(id) => write!(f, "Faction does not exist: `{}`", id),
             Self::DuplicateFaction(id) => write!(f, "Faction `{}` already exists", id),
+            Self::MemberDoesNotExist(faction_id, member_id) => write!(
+                f,
+                "Member with ID `{}` does not belong to faction `{}`",
+                member_id, faction_id
+            ),
             Self::DuplicateMember(faction_id, member_id) => write!(
                 f,
                 "Faction `{}` already has member with ID `{}`",
@@ -59,6 +65,18 @@ impl FactionManager {
         match f.insert(member.id()) {
             false => Err(FactionError::DuplicateMember(id.to_owned(), member.id())),
             true => Ok(()),
+        }
+    }
+
+    pub fn leave_faction(&mut self, id: &str, member: &impl HasID) -> Result<()> {
+        match self
+            .factions
+            .get_mut(id)
+            .ok_or(FactionError::FactionDoesNotExist(id.to_owned()))?
+            .remove(&member.id())
+        {
+            true => Ok(()),
+            false => Err(FactionError::MemberDoesNotExist(id.to_owned(), member.id())),
         }
     }
 
@@ -123,6 +141,20 @@ mod tests {
 
         assert!(res.is_ok());
         assert_eq!(fm.belongs_to("horde", &member), Ok(true));
+    }
+
+    #[test]
+    fn member_leaves_faction() {
+        let mut member = MockMember::new();
+        member.expect_id().return_const("garrosh");
+        let mut fm = FactionManager::new();
+        _ = fm.add_faction("horde");
+        _ = fm.join_faction("horde", &member);
+
+        let res = fm.leave_faction("horde", &member);
+
+        assert!(res.is_ok());
+        assert_eq!(fm.belongs_to("horde", &member), Ok(false));
     }
 
     #[test]
