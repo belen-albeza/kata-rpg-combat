@@ -1,15 +1,16 @@
-use crate::traits::{DamageDealer, HasHealing, HasHealth, HasLevel};
+use crate::traits::{DamageDealer, HasHealing, HasHealth, HasID, HasLevel};
 use std::cmp::{max, min};
 
 const MAX_HEALTH_LO_LEVEL: u64 = 1000;
 const MAX_HEALTH_HI_LEVEL: u64 = 1500;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Character {
     health: u64,
     damage: u64,
     healing: u64,
     level: u64,
+    id: String,
 }
 
 impl Character {
@@ -21,11 +22,18 @@ impl Character {
 impl Default for Character {
     fn default() -> Self {
         Self {
+            id: "".to_string(),
             level: 1,
             health: 1000,
             damage: 1,
             healing: 1,
         }
+    }
+}
+
+impl HasID for Character {
+    fn id(&self) -> String {
+        self.id.to_owned()
     }
 }
 
@@ -78,6 +86,7 @@ pub struct CharacterBuilder {
     damage: u64,
     healing: u64,
     level: u64,
+    id: String,
 }
 
 impl CharacterBuilder {
@@ -87,7 +96,13 @@ impl CharacterBuilder {
             damage: 0,
             healing: 0,
             level: 1,
+            id: "".to_owned(),
         }
+    }
+
+    pub fn with_id(&mut self, id: &str) -> &mut Self {
+        self.id = id.to_owned();
+        self
     }
 
     pub fn with_health(&mut self, health: u64) -> &mut Self {
@@ -119,6 +134,7 @@ impl CharacterBuilder {
         c.damage = self.damage;
         c.healing = self.healing;
         c.level = self.level;
+        c.id = self.id.to_owned();
         c
     }
 

@@ -1,5 +1,6 @@
 pub mod actions;
 pub mod character;
+pub mod factions;
 pub mod traits;
 
 use crate::character::CharacterBuilder;

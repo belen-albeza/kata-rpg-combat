@@ -27,3 +27,8 @@ pub trait DamageDealer {
 pub trait HasHealing {
     fn healing(&self) -> u64;
 }
+
+#[automock]
+pub trait HasID {
+    fn id(&self) -> String;
+}
